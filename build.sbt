@@ -53,6 +53,7 @@ lazy val commonSettings = Seq(
     Libraries.http4sCirce,
     Libraries.circeCore,
     Libraries.circeGeneric,
+    Libraries.circeGenericX,
     Libraries.pureConfig,
     Libraries.logback    % Runtime,
     Libraries.scalaTest  % Test,

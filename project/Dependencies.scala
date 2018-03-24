@@ -38,6 +38,7 @@ object Dependencies {
 
     lazy val circeCore      = circe("circe-core")
     lazy val circeGeneric   = circe("circe-generic")
+    lazy val circeGenericX  = circe("circe-generic-extras")
 
     lazy val pureConfig     = "com.github.pureconfig" %% "pureconfig"       % Versions.pureConfig
     lazy val machinist      = "org.typelevel"         %% "machinist"        % Versions.machinist
