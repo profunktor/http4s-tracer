@@ -44,7 +44,7 @@ class UserRoutes[F[_]](userService: UserAlgebra[KFX[F, ?]])(implicit F: Sync[F])
         userService
           .persist(user)
           .run(Tracer.getTraceId[F](req))
-          .flatMap(_ => Ok())
+          .flatMap(_ => Created())
           .handleErrorWith {
             case UserAlreadyExists(_) => NotFound(user.username.value)
           }
