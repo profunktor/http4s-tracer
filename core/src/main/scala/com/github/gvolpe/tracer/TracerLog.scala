@@ -18,7 +18,7 @@ package com.github.gvolpe.tracer
 
 import cats.data.Kleisli
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.{TraceId, Traceable}
+import com.github.gvolpe.tracer.Tracer.{TraceId, KFX}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
@@ -29,8 +29,8 @@ trait TracerLog[F[_]] {
 }
 
 object TracerLog {
-  implicit def defaultLog[F[_]](implicit F: Sync[F]): TracerLog[Traceable[F, ?]] =
-    new TracerLog[Traceable[F, ?]] {
+  implicit def defaultLog[F[_]](implicit F: Sync[F]): TracerLog[KFX[F, ?]] =
+    new TracerLog[KFX[F, ?]] {
       def logger[A](implicit ct: ClassTag[A]): Logger =
         LoggerFactory.getLogger(ct.runtimeClass)
 

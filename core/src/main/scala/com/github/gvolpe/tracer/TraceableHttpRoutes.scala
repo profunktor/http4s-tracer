@@ -1,9 +1,9 @@
 package com.github.gvolpe.tracer
 
-import cats.Applicative
-import cats.data.{Kleisli, OptionT}
-import com.github.gvolpe.tracer.Tracer.TraceId
-import org.http4s.{HttpService, Request, Response}
+//import cats.Applicative
+//import cats.data.{Kleisli, OptionT}
+//import com.github.gvolpe.tracer.Tracer.TraceId
+//import org.http4s.{HttpService, Request, Response}
 
 object TraceableHttpRoutes {
 //  def apply[F[_]](pf: TraceId => PartialFunction[Request[F], F[Response[F]]])(

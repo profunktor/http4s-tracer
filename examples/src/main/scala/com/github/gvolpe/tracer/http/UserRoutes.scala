@@ -18,25 +18,16 @@ package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.gvolpe.tracer.{TraceableHttpRoutes, Tracer}
-import com.github.gvolpe.tracer.Tracer.Traceable
+import com.github.gvolpe.tracer.Tracer
+import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.service._
-import io.circe.{Decoder, Encoder}
+import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
 import io.circe.generic.auto._
-import io.circe.generic.extras.decoding.UnwrappedDecoder
-import io.circe.generic.extras.encoding.UnwrappedEncoder
 import org.http4s._
-import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.dsl.Http4sDsl
 
-class UserRoutes[F[_]](userService: UserService[Traceable[F, ?]])(implicit F: Sync[F]) extends Http4sDsl[F] {
-
-  implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
-  implicit def valueClassDecoder[A: UnwrappedDecoder]: Decoder[A] = implicitly
-
-  implicit def jsonDecoder[A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
-  implicit def jsonEncoder[A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
+class UserRoutes[F[_]](userService: UserAlgebra[KFX[F, ?]])(implicit F: Sync[F]) extends Http4sDsl[F] {
 
   val routes: HttpService[F] = HttpService[F] {
     case req @ GET -> Root / username =>
