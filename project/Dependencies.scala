@@ -5,7 +5,7 @@ object Dependencies {
   object Versions {
     val catsEffect  = "0.10"
     val fs2         = "0.10.3"
-    val http4s      = "0.18.3"
+    val http4s      = "0.18.4"
     val circe       = "0.9.2"
     val pureConfig  = "0.9.0"
     val quickLens   = "1.4.11"
