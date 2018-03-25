@@ -44,7 +44,6 @@ object Tracer extends StringSyntax {
 
   final case class TraceId(value: String) extends AnyVal
 
-  // TODO: Define a Context maybe instead of just TraceId? Context could carry the Logger instance
   type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
   def apply[F[_]](service: HttpService[F])(implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpService[F] =

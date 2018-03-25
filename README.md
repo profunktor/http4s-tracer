@@ -15,4 +15,6 @@ Quite useful to trace the flow of your application starting out at each request.
 
 In a normal application, you will have thousands of requests and tracing the call chain in a failure scenario will be invaluable.
 
-***DISCLAIMER***: This is an idea I first heard from [Eric Torreborre](https://twitter.com/etorreborre), also described in [his Haskell setup](http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html) by defining a newtype `RIO` (a.k.a. `Reader IO Monad`). However, this implementation is adapted to work nicely with `Http4s` while abstracting over the effect type using `Cats Effect`.
+### Credits
+
+This is an idea I first heard from [Eric Torreborre](https://twitter.com/etorreborre), also described in [his Haskell setup](http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html) by defining a newtype `RIO` (a.k.a. `Reader IO Monad`). However, this implementation is adapted to work nicely with `Http4s` while abstracting over the effect type using `Cats Effect` and where the main type is defined as `type KFX[F[_], A] = Kleisli[F, TraceId, A]`, a bit simpler than how `RIO` is actually defined because it's also doing less (just carrying a `TraceId` around).
