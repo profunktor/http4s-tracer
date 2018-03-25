@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package com.github.gvolpe.tracer.repository
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
-import com.github.gvolpe.tracer.algebra.UserAlgebra
-import com.github.gvolpe.tracer.http.UserRoutes
-import com.github.gvolpe.tracer.interpreter.UserTracerInterpreter
-import com.github.gvolpe.tracer.repository.UserTracerRepository
+import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
-import org.http4s.HttpService
 
-class Module[F[_]: Sync] {
-
-  private val repo: UserRepository[KFX[F, ?]] =
-    new UserTracerRepository[F]
-
-  private val service: UserAlgebra[KFX[F, ?]] =
-    new UserTracerInterpreter[F](repo)
-
-  val routes: HttpService[F] =
-    new UserRoutes[F](service).routes
-
+class TestUserRepository[F[_]](implicit F: Sync[F]) extends UserRepository[F] {
+  override def find(username: Username): F[Option[User]] = F.delay {
+    if (username.value == "xxx") None else Some(User(username))
+  }
+  override def persist(user: User): F[Unit] = F.unit
 }

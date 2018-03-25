@@ -50,7 +50,7 @@ object Tracer extends StringSyntax {
   def apply[F[_]: Monad](service: HttpService[F])(implicit L: TracerLog[KFX[F, ?]]): HttpService[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       // TODO: Use a more efficient UUID generator
-      val traceId = TraceId(UUID.randomUUID().toString)
+      val traceId   = TraceId(UUID.randomUUID().toString)
       val tracedReq = req.putHeaders(Header(TraceIdHeader, traceId.value))
 
       for {

@@ -16,8 +16,13 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect.IO
+import com.github.gvolpe.tracer.model.user.{User, Username}
 
-object IOAssertion {
-  def apply[A](ioa: IO[A]): A = ioa.unsafeRunSync()
+object algebra {
+
+  trait UserAlgebra[F[_]] {
+    def find(username: Username): F[User]
+    def persist(user: User): F[Unit]
+  }
+
 }

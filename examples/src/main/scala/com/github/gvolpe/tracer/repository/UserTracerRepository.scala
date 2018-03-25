@@ -32,7 +32,7 @@ class UserTracerRepository[F[_]](implicit F: Sync[F], L: TracerLog[KFX[F, ?]]) e
       _ <- L.info[UserRepository[F]](s"Find user by username: ${username.value}").run(id)
       u <- F.delay(users.get(username))
     } yield u
-   }
+  }
 
   override def persist(user: User): KFX[F, Unit] = Kleisli { id =>
     for {

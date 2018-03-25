@@ -91,7 +91,7 @@ lazy val noPublish = Seq(
 )
 
 lazy val root = project.in(file("."))
-  .aggregate(`http4s-tracer`)
+  .aggregate(`http4s-tracer`, examples)
   .settings(noPublish)
 
 lazy val `http4s-tracer` = project.in(file("core"))

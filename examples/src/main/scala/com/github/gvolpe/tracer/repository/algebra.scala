@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package com.github.gvolpe.tracer.repository
 
-import cats.effect.IO
+import com.github.gvolpe.tracer.model.user.{User, Username}
 
-object IOAssertion {
-  def apply[A](ioa: IO[A]): A = ioa.unsafeRunSync()
+object algebra {
+
+  trait UserRepository[F[_]] {
+    def find(username: Username): F[Option[User]]
+    def persist(user: User): F[Unit]
+  }
+
 }

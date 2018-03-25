@@ -26,10 +26,13 @@ import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.server.Router
 
-class UserRoutes[F[_]](userService: UserAlgebra[KFX[F, ?]])(implicit F: Sync[F]) extends Http4sDsl[F] {
+class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sDsl[F] {
 
-  val routes: HttpService[F] = HttpService[F] {
+  private[http] val PathPrefix = "/users"
+
+  private val httpRoutes: HttpService[F] = HttpService[F] {
     case req @ GET -> Root / username =>
       userService
         .find(Username(username))
@@ -46,9 +49,13 @@ class UserRoutes[F[_]](userService: UserAlgebra[KFX[F, ?]])(implicit F: Sync[F])
           .run(Tracer.getTraceId[F](req))
           .flatMap(_ => Created())
           .handleErrorWith {
-            case UserAlreadyExists(_) => NotFound(user.username.value)
+            case UserAlreadyExists(_) => Conflict(user.username.value)
           }
       }
   }
+
+  val routes: HttpService[F] = Router(
+    PathPrefix -> httpRoutes
+  )
 
 }

@@ -18,7 +18,7 @@ package com.github.gvolpe.tracer
 
 import cats.data.Kleisli
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.{TraceId, KFX}
+import com.github.gvolpe.tracer.Tracer.{KFX, TraceId}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
