@@ -18,7 +18,7 @@ package com.github.gvolpe.tracer
 
 import cats.data.Kleisli
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.{KFX, TraceId}
+import com.github.gvolpe.tracer.Tracer.KFX
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
@@ -34,11 +34,11 @@ object TracerLog {
       def logger[A](implicit ct: ClassTag[A]): Logger =
         LoggerFactory.getLogger(ct.runtimeClass)
 
-      override def info[A](value: String)(implicit ct: ClassTag[A]): Kleisli[F, TraceId, Unit] = Kleisli { id =>
+      override def info[A: ClassTag](value: String): KFX[F, Unit] = Kleisli { id =>
         F.delay(logger[A].info(s"$id >> $value"))
       }
 
-      override def error[A](error: Exception)(implicit ct: ClassTag[A]): Kleisli[F, TraceId, Unit] = Kleisli { id =>
+      override def error[A: ClassTag](error: Exception): KFX[F, Unit] = Kleisli { id =>
         F.delay(logger[A].error(s"$id >> ${error.getMessage}"))
       }
     }

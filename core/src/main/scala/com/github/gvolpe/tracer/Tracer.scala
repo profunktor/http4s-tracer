@@ -18,8 +18,8 @@ package com.github.gvolpe.tracer
 
 import java.util.UUID
 
-import cats.Monad
 import cats.data.{Kleisli, OptionT}
+import cats.effect.Sync
 import org.http4s.syntax.StringSyntax
 import org.http4s.{Header, HttpService, Request, Response}
 
@@ -47,7 +47,7 @@ object Tracer extends StringSyntax {
   // TODO: Define a Context maybe instead of just TraceId? Context could carry the Logger instance
   type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
-  def apply[F[_]: Monad](service: HttpService[F])(implicit L: TracerLog[KFX[F, ?]]): HttpService[F] =
+  def apply[F[_]: Sync](service: HttpService[F])(implicit L: TracerLog[KFX[F, ?]]): HttpService[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       // TODO: Use a more efficient UUID generator
       val traceId   = TraceId(UUID.randomUUID().toString)
