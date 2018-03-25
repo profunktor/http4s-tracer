@@ -29,11 +29,11 @@ import org.http4s.{Header, HttpService, Request, Response}
   *
   * Quite useful to trace the flow of each request. For example:
   *
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Http Request /users
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserService fetching users
+  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Request(method=GET, uri=/users, ...)
+  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserAlgebra requesting users
   * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserRepository fetching users from DB
   * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> MetricsService saving users metrics
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> HttpResponse users
+  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Response(status=200, ...)
   *
   * In a normal application, you will have thousands of requests and tracing the call chain in
   * a failure scenario will be invaluable.
@@ -54,9 +54,10 @@ object Tracer extends StringSyntax {
       val tracedReq = req.putHeaders(Header(TraceIdHeader, traceId.value))
 
       for {
-        _ <- OptionT.liftF(L.info[Tracer.type](s"Performing HTTP Request: ${req.pathInfo}").run(traceId))
-        s <- service(tracedReq)
-      } yield s
+        _  <- OptionT.liftF(L.info[Tracer.type](s"$req").run(traceId))
+        rs <- service(tracedReq)
+        _  <- OptionT.liftF(L.info[Tracer.type](s"$rs").run(traceId))
+      } yield rs
     }
 
   def getTraceId[F[_]](request: Request[F]): TraceId =

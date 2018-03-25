@@ -3,13 +3,14 @@ http4s-tracer
 
 It provides an `HttpMiddleware` that adds a `Trace-Id` header with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
 
-Quite useful to trace the flow of your application starting out at each request. Given a `UsersHttpRoutes`, `UserService` and `UserRepository` you'll get an activity log like the following:
+Quite useful to trace the flow of your application starting out at each request. Given a `UsersHttpRoutes`, `UserAlgebra` and `UserRepository` you'll get an activity log like the following when trying to create a user:
 
 ```
-TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Performing Http Request GET /users
-TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserService fetching users
-TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserRepository fetching users from DB
-TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Performing Http Response GET /users
+4:13:48.985 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer$ - TraceId(02594e59-4b21-4d0a-aad5-5866a632fbb5) >> Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 30))
+14:13:49.282 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.algebra$UserAlgebra - TraceId(02594e59-4b21-4d0a-aad5-5866a632fbb5) >> About to persist user: modersky
+14:13:49.290 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra$UserRepository - TraceId(02594e59-4b21-4d0a-aad5-5866a632fbb5) >> Find user by username: modersky
+14:13:49.298 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra$UserRepository - TraceId(02594e59-4b21-4d0a-aad5-5866a632fbb5) >> Persisting user: modersky
+14:13:49.315 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer$ - TraceId(02594e59-4b21-4d0a-aad5-5866a632fbb5) >> Response(status=201, headers=Headers(Content-Length: 0))
 ```
 
 In a normal application, you will have thousands of requests and tracing the call chain in a failure scenario will be invaluable.
