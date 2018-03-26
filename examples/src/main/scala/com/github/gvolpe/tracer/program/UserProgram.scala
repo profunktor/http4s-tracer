@@ -16,7 +16,7 @@
 
 package com.github.gvolpe.tracer.program
 
-import cats.effect.Sync
+import cats.MonadError
 import cats.syntax.all._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
@@ -25,7 +25,7 @@ import com.github.gvolpe.tracer.repository.algebra.UserRepository
 case class UserAlreadyExists(username: Username) extends Exception(username.value)
 case class UserNotFound(username: Username)      extends Exception(username.value)
 
-class UserProgram[F[_]](repo: UserRepository[F])(implicit F: Sync[F]) extends UserAlgebra[F] {
+class UserProgram[F[_]](repo: UserRepository[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
 
   override def find(username: Username): F[User] = {
     val notFound = F.raiseError[User](UserNotFound(username))

@@ -16,7 +16,7 @@
 
 package com.github.gvolpe.tracer.interpreter
 
-import cats.effect.Sync
+import cats.MonadError
 import com.github.gvolpe.tracer.Tracer.KFX
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
@@ -24,7 +24,8 @@ import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 
-class UserTracerInterpreter[F[_]: Sync](repo: UserRepository[KFX[F, ?]])(implicit L: TracerLog[KFX[F, ?]])
+class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])(implicit F: MonadError[F, Throwable],
+                                                                   L: TracerLog[KFX[F, ?]])
     extends UserProgram[KFX[F, ?]](repo) {
 
   override def find(username: Username): KFX[F, User] =
