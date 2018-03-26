@@ -7,11 +7,7 @@ object Dependencies {
     val fs2         = "0.10.3"
     val http4s      = "0.18.4"
     val circe       = "0.9.2"
-    val pureConfig  = "0.9.0"
-    val quickLens   = "1.4.11"
-    val shapeless   = "2.3.2"
-    val simulacrum  = "0.11.0"
-    val machinist   = "0.6.2"
+    val gfcTimeuuid = "0.0.8"
 
     // Test
     val scalaTest   = "3.0.4"
@@ -40,9 +36,7 @@ object Dependencies {
     lazy val circeGeneric   = circe("circe-generic")
     lazy val circeGenericX  = circe("circe-generic-extras")
 
-    lazy val pureConfig     = "com.github.pureconfig" %% "pureconfig"       % Versions.pureConfig
-    lazy val machinist      = "org.typelevel"         %% "machinist"        % Versions.machinist
-    lazy val simulacrum     = "com.github.mpilquist"  %% "simulacrum"       % Versions.simulacrum
+    lazy val gfcTimeuuid    = "com.gilt"              %% "gfc-timeuuid"     % Versions.gfcTimeuuid
 
     // Test
     lazy val scalaCheck     = "org.scalacheck"        %% "scalacheck"       % Versions.scalaCheck

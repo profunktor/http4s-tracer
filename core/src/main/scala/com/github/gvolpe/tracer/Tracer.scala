@@ -16,16 +16,15 @@
 
 package com.github.gvolpe.tracer
 
-import java.util.UUID
-
 import cats.data.{Kleisli, OptionT}
 import cats.effect.Sync
+import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
 import org.http4s.{Header, HttpService, Request, Response}
 
 /**
-  * [[org.http4s.server.HttpMiddleware]] that adds a Trace-Id header with a unique UUID value
-  * and logs the start of the request and the response with the given UUID.
+  * [[org.http4s.server.HttpMiddleware]] that adds a Trace-Id header with a unique Time-based UUID
+  * value and logs the http request and http response with it.
   *
   * Quite useful to trace the flow of each request. For example:
   *
@@ -49,7 +48,7 @@ object Tracer extends StringSyntax {
   def apply[F[_]](service: HttpService[F])(implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpService[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       for {
-        id <- OptionT.liftF(F.delay(TraceId(UUID.randomUUID().toString))) // TODO: Use a more efficient UUID generator
+        id <- OptionT.liftF(F.delay(TraceId(TimeUuid().toString)))
         tr <- OptionT.liftF(F.delay(req.putHeaders(Header(TraceIdHeader, id.value))))
         _  <- OptionT.liftF(L.info[Tracer.type](s"$req").run(id))
         rs <- service(tr)

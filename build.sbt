@@ -1,7 +1,6 @@
 import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 import com.scalapenos.sbt.prompt._
 import Dependencies._
-import microsites.ExtraMdFileConfig
 
 name := """https-tracer-root"""
 
@@ -48,14 +47,8 @@ lazy val commonSettings = Seq(
     Libraries.catsEffect,
     Libraries.fs2Core,
     Libraries.http4sServer,
-    Libraries.http4sClient,
     Libraries.http4sDsl,
-    Libraries.http4sCirce,
-    Libraries.circeCore,
-    Libraries.circeGeneric,
-    Libraries.circeGenericX,
-    Libraries.pureConfig,
-    Libraries.logback    % Runtime,
+    Libraries.gfcTimeuuid,
     Libraries.scalaTest  % Test,
     Libraries.scalaCheck % Test
   ),
@@ -83,16 +76,25 @@ lazy val commonSettings = Seq(
       </developers>*/
 )
 
+lazy val examplesDependencies = Seq(
+  Libraries.http4sClient,
+  Libraries.http4sCirce,
+  Libraries.circeCore,
+  Libraries.circeGeneric,
+  Libraries.circeGenericX,
+  Libraries.logback % Runtime,
+)
+
+lazy val root = project.in(file("."))
+  .aggregate(`http4s-tracer`, examples)
+  .settings(noPublish)
+
 lazy val noPublish = Seq(
   publish := {},
   publishLocal := {},
   publishArtifact := false,
   skip in publish := true
 )
-
-lazy val root = project.in(file("."))
-  .aggregate(`http4s-tracer`, examples)
-  .settings(noPublish)
 
 lazy val `http4s-tracer` = project.in(file("core"))
   .settings(commonSettings: _*)
@@ -101,5 +103,6 @@ lazy val `http4s-tracer` = project.in(file("core"))
 
 lazy val examples = project.in(file("examples"))
   .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= examplesDependencies)
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(`http4s-tracer`)
