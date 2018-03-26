@@ -20,7 +20,7 @@ import com.github.gvolpe.tracer.TracedHttpRoute.TracedRequest
 import com.github.gvolpe.tracer.Tracer.TraceId
 import org.http4s.Request
 
-trait TraceDsl {
+trait TracerDsl {
   object using {
     def unapply[F[_]](tr: TracedRequest[F]): Option[(Request[F], TraceId)] =
       Some(tr.request -> tr.traceId)

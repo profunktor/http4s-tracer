@@ -22,13 +22,12 @@ import com.github.gvolpe.tracer.Tracer.KFX
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
-import com.github.gvolpe.tracer.{TraceDsl, TracedHttpRoute}
+import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute}
 import io.circe.generic.auto._
 import org.http4s._
-import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 
-class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sDsl[F] with TraceDsl {
+class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
 
   private[http] val PathPrefix = "/users"
 
