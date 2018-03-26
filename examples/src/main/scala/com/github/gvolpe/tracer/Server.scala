@@ -33,7 +33,7 @@ class HttpServer[F[_]: Effect] extends StreamApp[F] {
         ctx <- Stream(new Module[F])
         exitCode <- BlazeBuilder[F]
                      .bindHttp(8080, "0.0.0.0")
-                     .mountService(Tracer(ctx.routes))
+                     .mountService(ctx.routes)
                      .serve
       } yield exitCode
     }
