@@ -103,6 +103,7 @@ lazy val `http4s-tracer` = project.in(file("core"))
 
 lazy val examples = project.in(file("examples"))
   .settings(commonSettings: _*)
+  .settings(scalacOptions -= "-Ywarn-dead-code")
   .settings(libraryDependencies ++= examplesDependencies)
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(`http4s-tracer`)
