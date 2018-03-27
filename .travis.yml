@@ -1,12 +1,9 @@
 language:
   - scala
 
-matrix:
-  include:
-    - jdk: oraclejdk8
-      scala: 2.11.12
-    - jdk: oraclejdk8
-      scala: 2.12.4
+scala:
+  - 2.12.4
+  - 2.11.12
 
 jdk:
   - oraclejdk8
@@ -14,7 +11,7 @@ jdk:
 cache:
   directories:
     - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot/
+    - $HOME/.sbt
 
 before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
