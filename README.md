@@ -15,6 +15,102 @@ Quite useful to trace the flow of your application starting out at each request.
 
 In a normal application, you will have thousands of requests and tracing the call chain in a failure scenario will be invaluable.
 
+### Dependencies
+
+Add this to your `build.sbt`:
+
+```
+libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % "0.1"
+```
+
+`http4s-tracer` has the following dependencies:
+
+| Dependency   | Version    |
+| ------------ |:----------:|
+| cats         | 1.1.1      |
+| cats-effect  | 0.10       |
+| fs2          | 0.10.3     |
+| gfc-timeuuid | 0.0.8      |
+| http4s       | 0.18.4     |
+
+### Usage Guide
+
+Define your Http Routes by importing `Http4sTracerDsl[F]` instead of `Http4sDsl[F]` and use the `TracedHttpRoute` constructor instead of `HttpService`. Eg:
+
+```scala
+class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
+
+  val routes: HttpService[F] = TracedHttpRoute[F] {
+    case GET -> Root / username using traceId =>
+      userService.find(Username(username)).run(traceId)
+        .flatMap(user => Ok(user))
+        .handleErrorWith { case UserNotFound(_) => NotFound(username) }
+  }
+
+}
+```
+
+**For authenticated routes use `Http4sAuthTracerDsl[F]` and `AuthTracedHttpRoute[T, F]` instead.**
+
+Where `UserAlgebra` is defined as:
+
+```scala
+trait UserAlgebra[F[_]] {
+  def find(username: Username): F[User]
+}
+```
+
+And implemented in two parts: a `program` that has all the logic:
+
+```scala
+class UserProgram[F[_]](repo: UserRepository[F])
+                       (implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
+
+  override def find(username: Username): F[User] = {
+    val notFound = F.raiseError[User](UserNotFound(username))
+    for {
+      mu <- repo.find(username) // F[Option[User]]
+      rs <- mu.fold(notFound)(F.pure)
+    } yield rs
+  }
+
+}
+```
+
+And an `interpreter` that just adds the tracing log part to it, by following a `tagless final` design:
+
+```scala
+class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])
+                                 (implicit F: MonadError[F, Throwable],
+                                           L: TracerLog[KFX[F, ?]])
+    extends UserProgram[KFX[F, ?]](repo) {
+
+  override def find(username: Username): KFX[F, User] =
+    for {
+      _ <- L.info[UserAlgebra[F]](s"Find user by username: ${username.value}")
+      u <- super.find(username)
+    } yield u
+
+}
+```
+
+Use the given `Tracer` middleware on your http routes:
+
+```scala
+import com.github.gvolpe.tracer.instances.tracerlog._
+
+val userRoutes: HttpService[F] = new UserRoutes[F](service).routes
+val routes: HttpService[F] = Tracer(userRoutes)
+```
+
+Notice that an implicit instance of `TracerLog[F]` is needed for `Tracer.apply`. You can either provide your own or just use the default one that uses a `org.slf4j.Logger` instance to log the trace of your application.
+
+3. Go and have a rest, your application won't lose track of all its activity :)
+
+Although defining an interpreter in terms of `Kleisli` adds a bit of boilerplate, at the end it pays off. And it's also super easy to test! You can just test your `program` by just using `IO` for example.
+
+Take a look at the [complete example](https://github.com/gvolpe/http4s-tracer/tree/master/examples/src) for more details.
+
 ### Credits
 
 This is an idea I first heard from [Eric Torreborre](https://twitter.com/etorreborre), also described in [his Haskell setup](http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html) by defining a newtype `RIO` (a.k.a. `Reader IO Monad`). However, this implementation is adapted to work nicely with `Http4s` while abstracting over the effect type using `Cats Effect` and where the main type is defined as `type KFX[F[_], A] = Kleisli[F, TraceId, A]`, a bit simpler than how `RIO` is actually defined because it's also doing less (just carrying a `TraceId` around).

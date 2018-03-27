@@ -23,7 +23,7 @@ import org.http4s.syntax.StringSyntax
 import org.http4s.{Header, HttpService, Request, Response}
 
 /**
-  * [[org.http4s.server.HttpMiddleware]] that adds a Trace-Id header with a unique Time-based UUID
+  * An `org.http4s.server.HttpMiddleware` that adds a Trace-Id header with a unique Time-based UUID
   * value and logs the http request and http response with it.
   *
   * Quite useful to trace the flow of each request. For example:

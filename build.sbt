@@ -6,7 +6,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "com.github.gvolpe"
 
-version in ThisBuild := "0.5"
+version in ThisBuild := "0.1"
 
 crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.4")
 
@@ -41,7 +41,7 @@ lazy val commonScalacOptions = Seq(
 lazy val commonSettings = Seq(
   startYear := Some(2018),
   licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
-  homepage := Some(url("https://github.com/gvolpe/https-tracer")),
+  homepage := Some(url("https://github.com/gvolpe/http4s-tracer")),
   libraryDependencies ++= Seq(
     compilerPlugin(Libraries.kindProjector),
     Libraries.catsEffect,
@@ -54,8 +54,8 @@ lazy val commonSettings = Seq(
   ),
   resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
   scalacOptions := commonScalacOptions,
-  scalafmtOnCompile := true
-  /*coverageExcludedPackages := "com\\.github\\.gvolpe\\.fs2rabbit\\.examples.*;com\\.github\\.gvolpe\\.fs2rabbit\\.typeclasses.*;com\\.github\\.gvolpe\\.fs2rabbit\\.instances.*;.*QueueName*;.*RoutingKey*;.*ExchangeName*;.*DeliveryTag*;.*AmqpClientStream*;.*ConnectionStream*;",
+  scalafmtOnCompile := true,
+  /*coverageExcludedPackages := "com\\.github\\.gvolpe\\.fs2rabbit\\.examples.*;com\\.github\\.gvolpe\\.fs2rabbit\\.typeclasses.*;com\\.github\\.gvolpe\\.fs2rabbit\\.instances.*;.*QueueName*;.*RoutingKey*;.*ExchangeName*;.*DeliveryTag*;.*AmqpClientStream*;.*ConnectionStream*;", */
   publishTo := {
     val sonatype = "https://oss.sonatype.org/"
     if (isSnapshot.value)
@@ -73,7 +73,7 @@ lazy val commonSettings = Seq(
           <name>Gabriel Volpe</name>
           <url>http://github.com/gvolpe</url>
         </developer>
-      </developers>*/
+      </developers>
 )
 
 lazy val examplesDependencies = Seq(
@@ -98,12 +98,12 @@ lazy val noPublish = Seq(
 
 lazy val `http4s-tracer` = project.in(file("core"))
   .settings(commonSettings: _*)
-  .settings(parallelExecution in Test := false)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val examples = project.in(file("examples"))
   .settings(commonSettings: _*)
   .settings(scalacOptions -= "-Ywarn-dead-code")
   .settings(libraryDependencies ++= examplesDependencies)
+  .settings(noPublish)
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(`http4s-tracer`)
