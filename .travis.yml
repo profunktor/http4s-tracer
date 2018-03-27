@@ -1,8 +1,12 @@
 language:
   - scala
 
-scala:
-  - 2.11.8
+matrix:
+  include:
+    - jdk: oraclejdk8
+      scala: 2.11.12
+    - jdk: oraclejdk8
+      scala: 2.12.4
 
 jdk:
   - oraclejdk8
@@ -17,4 +21,4 @@ before_cache:
   - find $HOME/.sbt -name "*.lock" -delete
 
 script:
-  - sbt clean +test
+  - sbt clean test
