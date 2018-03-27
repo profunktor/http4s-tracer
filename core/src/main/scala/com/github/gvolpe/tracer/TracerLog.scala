@@ -21,4 +21,5 @@ import scala.reflect.ClassTag
 trait TracerLog[F[_]] {
   def info[A: ClassTag](value: String): F[Unit]
   def error[A: ClassTag](error: Exception): F[Unit]
+  def warn[A: ClassTag](value: String): F[Unit]
 }

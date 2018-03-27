@@ -38,6 +38,10 @@ object tracerlog {
       override def error[A: ClassTag](error: Exception): KFX[F, Unit] = Kleisli { id =>
         F.delay(logger[A].error(s"$id >> ${error.getMessage}"))
       }
+
+      override def warn[A: ClassTag](value: String): KFX[F, Unit] = Kleisli { id =>
+        F.delay(logger[A].warn(s"$id >> $value"))
+      }
     }
 
 }
