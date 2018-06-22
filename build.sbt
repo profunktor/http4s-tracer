@@ -1,12 +1,13 @@
 import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 import com.scalapenos.sbt.prompt._
 import Dependencies._
+import microsites.ExtraMdFileConfig
 
 name := """https-tracer-root"""
 
 organization in ThisBuild := "com.github.gvolpe"
 
-version in ThisBuild := "0.1"
+version in ThisBuild := "0.2"
 
 crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.4")
 
@@ -25,6 +26,7 @@ lazy val commonScalacOptions = Seq(
   "-language:implicitConversions",
   "-language:experimental.macros",
   "-unchecked",
+  "-Ypartial-unification",
   "-Xfatal-warnings",
   "-Xlint",
   "-Yno-adapted-args",
@@ -87,7 +89,7 @@ lazy val examplesDependencies = Seq(
 )
 
 lazy val root = project.in(file("."))
-  .aggregate(`http4s-tracer`, examples)
+  .aggregate(`http4s-tracer`, examples, microsite)
   .settings(noPublish)
 
 lazy val noPublish = Seq(
@@ -108,3 +110,38 @@ lazy val examples = project.in(file("examples"))
   .settings(noPublish)
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(`http4s-tracer`)
+
+lazy val microsite = project.in(file("site"))
+  .enablePlugins(MicrositesPlugin)
+  .settings(commonSettings: _*)
+  .settings(noPublish)
+  .settings(
+    micrositeName := "Http4s Tracer",
+    micrositeDescription := "End to end tracing system for Http4s",
+    micrositeAuthor := "Gabriel Volpe",
+    micrositeGithubOwner := "gvolpe",
+    micrositeGithubRepo := "http4s-tracer",
+    micrositeBaseUrl := "/http4s-tracer",
+    micrositeExtraMdFiles := Map(
+      file("README.md") -> ExtraMdFileConfig(
+        "index.md",
+        "home",
+        Map("title" -> "Home", "position" -> "0")
+      )
+    ),
+    micrositeGitterChannel := false,
+    micrositePushSiteWith := GitHub4s,
+    micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
+    fork in tut := true,
+    scalacOptions in Tut --= Seq(
+      "-Xfatal-warnings",
+      "-Ywarn-unused-import",
+      "-Ywarn-numeric-widen",
+      "-Ywarn-dead-code",
+      "-Xlint:-missing-interpolator,_",
+    )
+  )
+  .dependsOn(`http4s-tracer`, examples)
+
+// CI build
+addCommandAlias("buildHttp4sTracer", ";clean;+coverage;+test;tut")
