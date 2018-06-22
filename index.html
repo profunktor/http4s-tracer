@@ -1,0 +1,67 @@
+<html><head><title>Http4s Tracer: Home</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Gabriel Volpe" /><meta name="description" content="End to end tracing system for Http4s" /><meta name="og:image" content="/http4s-tracer/img/poster.png" /><meta name="og:title" content="Http4s Tracer: Home" /><meta name="og:site_name" content="Http4s Tracer" /><meta name="og:url" content="https://github.com/gvolpe/http4s-tracer" /><meta name="og:type" content="website" /><meta name="og:description" content="End to end tracing system for Http4s" /><link rel="icon" type="image/png" href="/http4s-tracer/img/favicon.png" /><meta name="twitter:title" content="Http4s Tracer: Home" /><meta name="twitter:image" content="https://github.com/gvolpe/http4s-tracerimg/poster.png" /><meta name="twitter:description" content="End to end tracing system for Http4s" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/http4s-tracer/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/http4s-tracer/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/http4s-tracer/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/http4s-tracer/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/http4s-tracer/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/http4s-tracer/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/http4s-tracer/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/http4s-tracer/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/http4s-tracer/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/http4s-tracer/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/http4s-tracer/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/http4s-tracer/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/http4s-tracer/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/http4s-tracer/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/http4s-tracer/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/http4s-tracer/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/http4s-tracer/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/http4s-tracer/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/http4s-tracer/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/http4s-tracer/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/http4s-tracer/highlight/styles/default.css" /><link rel="stylesheet" href="/http4s-tracer/css/style.css" /><link rel="stylesheet" href="/http4s-tracer/css/palette.css" /><link rel="stylesheet" href="/http4s-tracer/css/codemirror.css" /></head><body><header id="site-header"><div class="navbar-wrapper"><div class="container"><div class="row"><div class="col-xs-6"><a href="/http4s-tracer/" class="brand"><div class="icon-wrapper"><span>Http4s Tracer</span></div></a></div><div class="col-xs-6"><nav class="text-right"><ul class=""><li><a href="https://github.com/gvolpe/http4s-tracer"><i class="fa fa-github"></i><span class="hidden-xs">GitHub</span></a></li></ul></nav></div></div></div></div><div class="jumbotron"><div class="container"><h1 class="text-center">End to end tracing system for Http4s</h1><h2></h2><p class="text-center"><a href="https://github.com/gvolpe/http4s-tracer" class="btn btn-outline-inverse">View on GitHub</a></p></div></div><div><ul class="horizontalNav">     <li><a class=" active " href="/http4s-tracer/">Home</a></li>  <li><a class="" href="/http4s-tracer/guide.html">Guide</a></li> </ul></div></header><main id="site-main"><section class="use"><div class="container"><div id="content"><h1 id="http4s-tracer">http4s-tracer</h1>
+
+<p><a href="https://travis-ci.org/gvolpe/http4s-tracer"><img src="https://travis-ci.org/gvolpe/http4s-tracer.svg?branch=master" alt="Build Status" /></a>
+<a href="https://index.scala-lang.org/gvolpe/http4s-tracer/http4s-tracer"><img src="https://index.scala-lang.org/gvolpe/http4s-tracer/http4s-tracer/latest.svg?color=orange" alt="Latest version" /></a></p>
+
+<p>It provides an <code class="highlighter-rouge">HttpMiddleware</code> that adds a <code class="highlighter-rouge">Trace-Id</code> header (name can be customized) with a unique <code class="highlighter-rouge">UUID</code> value and gives you an implicit <code class="highlighter-rouge">TracerLog</code> for any <code class="highlighter-rouge">F[_]: Sync]</code> that also logs the http request and http response with it.</p>
+
+<p>Quite useful to trace the flow of your application starting out at each request. For example, given a <code class="highlighter-rouge">UsersHttpRoutes</code>, <code class="highlighter-rouge">UserAlgebra</code> and <code class="highlighter-rouge">UserRepository</code> you’ll get an activity log like the following when trying to create a user:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>4:13:48.985 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer<span class="nv">$ </span>- TraceId<span class="o">(</span>02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">)</span> <span class="o">&gt;&gt;</span> Request<span class="o">(</span><span class="nv">method</span><span class="o">=</span>POST, <span class="nv">uri</span><span class="o">=</span>/users, <span class="nv">headers</span><span class="o">=</span>Headers<span class="o">(</span>HOST: localhost:8080, content-type: application/json, content-length: 30<span class="o">))</span>
+14:13:49.282 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.algebra<span class="nv">$UserAlgebra</span> - TraceId<span class="o">(</span>02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">)</span> <span class="o">&gt;&gt;</span> About to persist user: modersky
+14:13:49.290 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra<span class="nv">$UserRepository</span> - TraceId<span class="o">(</span>02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">)</span> <span class="o">&gt;&gt;</span> Find user by username: modersky
+14:13:49.298 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra<span class="nv">$UserRepository</span> - TraceId<span class="o">(</span>02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">)</span> <span class="o">&gt;&gt;</span> Persisting user: modersky
+14:13:49.315 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer<span class="nv">$ </span>- TraceId<span class="o">(</span>02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">)</span> <span class="o">&gt;&gt;</span> Response<span class="o">(</span><span class="nv">status</span><span class="o">=</span>201, <span class="nv">headers</span><span class="o">=</span>Headers<span class="o">(</span>Content-Length: 0, Trace-Id: 02594e59-4b21-4d0a-aad5-5866a632fbb5<span class="o">))</span>
+</code></pre></div></div>
+
+<p>In a normal application, you will have thousands of requests and tracing the call chain in a failure scenario will be invaluable.</p>
+
+<h3 id="dependencies">Dependencies</h3>
+
+<p>Add this to your <code class="highlighter-rouge">build.sbt</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">http4s-tracer</code> has the following dependencies:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Dependency</th>
+      <th style="text-align: center">Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>cats</td>
+      <td style="text-align: center">1.1.1</td>
+    </tr>
+    <tr>
+      <td>cats-effect</td>
+      <td style="text-align: center">0.10.1</td>
+    </tr>
+    <tr>
+      <td>fs2</td>
+      <td style="text-align: center">0.10.4</td>
+    </tr>
+    <tr>
+      <td>gfc-timeuuid</td>
+      <td style="text-align: center">0.0.8</td>
+    </tr>
+    <tr>
+      <td>http4s</td>
+      <td style="text-align: center">0.18.12</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="credits">Credits</h3>
+
+<p>This is an idea I first heard from <a href="https://twitter.com/etorreborre">Eric Torreborre</a>, also described in <a href="http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html">his Haskell setup</a> by defining a newtype <code class="highlighter-rouge">RIO</code> (a.k.a. <code class="highlighter-rouge">Reader IO Monad</code>) and inspired bt the <a href="https://www.fpcomplete.com/blog/2017/07/the-rio-monad">RIO Monad</a> described by <a href="https://github.com/snoyberg">Michael Snoyman</a> the year before. However, this implementation is adapted to work nicely with <code class="highlighter-rouge">Http4s</code> while abstracting over the effect type using <code class="highlighter-rouge">Cats Effect</code> and where the main type is defined as <code class="highlighter-rouge">type KFX[F[_], A] = Kleisli[F, TraceId, A]</code>, a bit simpler than how <code class="highlighter-rouge">RIO</code> is actually defined because it’s also doing less (just carrying a <code class="highlighter-rouge">TraceId</code> around).</p>
+
+</div></div></section><section class="technologies"><div class="container"><div class="row"></div></div></section></main><footer id="site-footer"><div class="container"><div class="row"><div class="col-xs-6"><p>Http4s Tracer is designed and developed by <a href="https://github.com/gvolpe/http4s-tracer" target="_blank">Gabriel Volpe</a></p></div><div class="col-xs-6"><p class="text-right"><a href="https://github.com/gvolpe/http4s-tracer"><span class="fa fa-github"></span>View on GitHub</a></p></div></div><div class="row"><div class="col-xs-6"><p>Website built with <a href="https://47deg.github.io/sbt-microsites/" target="_blank">Sbt-microsites</a> - © 2016 <a href="https://www.47deg.com/" target="_blank">47 Degrees</a></p></div></div></div></footer><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/http4s-tracer/highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script></body></html>
