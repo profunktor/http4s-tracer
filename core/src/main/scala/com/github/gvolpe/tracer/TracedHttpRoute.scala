@@ -16,17 +16,27 @@
 
 package com.github.gvolpe.tracer
 
-import cats.Applicative
+import cats.Monad
 import cats.data.{Kleisli, OptionT}
+import cats.syntax.flatMap._
+import cats.syntax.functor._
 import com.github.gvolpe.tracer.Tracer.TraceId
 import org.http4s.{HttpService, Request, Response}
 
 object TracedHttpRoute {
   case class TracedRequest[F[_]](traceId: TraceId, request: Request[F])
 
-  def apply[F[_]: Applicative](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpService[F] =
+  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpService[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
-      val tracedReq = TracedRequest[F](Tracer.getTraceId[F](req), req)
-      pf.andThen(OptionT.liftF(_)).applyOrElse(tracedReq, Function.const(OptionT.none))
+      OptionT {
+        Tracer
+          .getTraceId[F](req)
+          .map(x => TracedRequest[F](x.getOrElse(TraceId("-")), req))
+          .flatMap { tr =>
+            val rs: OptionT[F, Response[F]] = pf.andThen(OptionT.liftF(_)).applyOrElse(tr, Function.const(OptionT.none))
+            rs.value
+          }
+      }
+
     }
 }

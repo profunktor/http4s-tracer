@@ -4,7 +4,7 @@ http4s-tracer
 [![Build Status](https://travis-ci.org/gvolpe/http4s-tracer.svg?branch=master)](https://travis-ci.org/gvolpe/http4s-tracer)
 [![Latest version](https://index.scala-lang.org/gvolpe/http4s-tracer/http4s-tracer/latest.svg?color=orange)](https://index.scala-lang.org/gvolpe/http4s-tracer/http4s-tracer)
 
-It provides an `HttpMiddleware` that adds a `Trace-Id` header with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
+It provides an `HttpMiddleware` that adds a `Trace-Id` header (name can be customized) with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
 
 Quite useful to trace the flow of your application starting out at each request. For example, given a `UsersHttpRoutes`, `UserAlgebra` and `UserRepository` you'll get an activity log like the following when trying to create a user:
 
@@ -31,10 +31,10 @@ libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % "0.1"
 | Dependency   | Version    |
 | ------------ |:----------:|
 | cats         | 1.1.1      |
-| cats-effect  | 0.10       |
-| fs2          | 0.10.3     |
+| cats-effect  | 0.10.1     |
+| fs2          | 0.10.4     |
 | gfc-timeuuid | 0.0.8      |
-| http4s       | 0.18.4     |
+| http4s       | 0.18.12    |
 
 ### Usage Guide
 
@@ -105,7 +105,7 @@ class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])
 import com.github.gvolpe.tracer.instances.tracerlog._
 
 val userRoutes: HttpService[F] = new UserRoutes[F](service).routes
-val routes: HttpService[F] = Tracer(userRoutes)
+val routes: HttpService[F] = Tracer(userRoutes, headerName = "MyAppId") // Customizable Header name, default "Trace-Id"
 ```
 
 Notice that an implicit instance of `TracerLog[F]` is needed for `Tracer.apply`. You can either provide your own or just use the default one that uses a `org.slf4j.Logger` instance to log the trace of your application.

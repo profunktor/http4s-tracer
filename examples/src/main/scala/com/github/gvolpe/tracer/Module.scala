@@ -38,6 +38,6 @@ class Module[F[_]: Sync] {
     new UserRoutes[F](service).routes
 
   val routes: HttpService[F] =
-    Tracer(httpRoutes)
+    Tracer(httpRoutes, headerName = "Flow-Id") // Header name is optional, default to "Trace-Id"
 
 }

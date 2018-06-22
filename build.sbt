@@ -44,6 +44,7 @@ lazy val commonSettings = Seq(
   homepage := Some(url("https://github.com/gvolpe/http4s-tracer")),
   libraryDependencies ++= Seq(
     compilerPlugin(Libraries.kindProjector),
+    compilerPlugin(Libraries.betterMonadicFor),
     Libraries.catsEffect,
     Libraries.fs2Core,
     Libraries.http4sServer,

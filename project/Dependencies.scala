@@ -3,10 +3,10 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val catsEffect  = "0.10"
-    val fs2         = "0.10.3"
-    val http4s      = "0.18.7"
-    val circe       = "0.9.2"
+    val catsEffect  = "0.10.1"
+    val fs2         = "0.10.4"
+    val http4s      = "0.18.12"
+    val circe       = "0.9.3"
     val gfcTimeuuid = "0.0.8"
 
     // Test
@@ -14,7 +14,8 @@ object Dependencies {
     val scalaCheck  = "1.13.5"
 
     // Compiler
-    val kindProjector = "0.9.5"
+    val kindProjector     = "0.9.5"
+    val betterMonadicFor  = "0.2.4"
 
     // Runtime
     val logback     = "1.2.1"
@@ -43,7 +44,8 @@ object Dependencies {
     lazy val scalaTest      = "org.scalatest"         %% "scalatest"        % Versions.scalaTest
 
     // Compiler
-    lazy val kindProjector  = "org.spire-math"        %% "kind-projector"   % Versions.kindProjector // cross CrossVersion.full
+    lazy val kindProjector    = "org.spire-math"      %% "kind-projector"     % Versions.kindProjector // cross CrossVersion.full
+    lazy val betterMonadicFor = "com.olegpy"          %% "better-monadic-for" % Versions.betterMonadicFor
 
     // Runtime
     lazy val logback        = "ch.qos.logback"        %  "logback-classic"  % Versions.logback
