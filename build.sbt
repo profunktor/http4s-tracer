@@ -142,3 +142,6 @@ lazy val microsite = project.in(file("site"))
     )
   )
   .dependsOn(`http4s-tracer`, examples)
+
+// CI build
+addCommandAlias("buildHttp4sTracer", ";clean;+coverage;+test;tut")

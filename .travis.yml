@@ -18,4 +18,4 @@ before_cache:
   - find $HOME/.sbt -name "*.lock" -delete
 
 script:
-  - sbt clean test
+  - sbt buildHttp4sTracer
