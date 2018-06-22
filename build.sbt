@@ -9,7 +9,7 @@ organization in ThisBuild := "com.github.gvolpe"
 
 version in ThisBuild := "0.2"
 
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.4")
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.6")
 
 sonatypeProfileName := "com.github.gvolpe"
 
@@ -129,7 +129,17 @@ lazy val microsite = project.in(file("site"))
         Map("title" -> "Home", "position" -> "0")
       )
     ),
-    micrositeGitterChannel := false,
+    micrositePalette := Map(
+      "brand-primary"     -> "#E05236",
+      "brand-secondary"   -> "#631224",
+      "brand-tertiary"    -> "#2D232F",
+      "gray-dark"         -> "#453E46",
+      "gray"              -> "#837F84",
+      "gray-light"        -> "#E3E2E3",
+      "gray-lighter"      -> "#F4F3F4",
+      "white-color"       -> "#FFFFFF"
+    ),
+    micrositeGitterChannel := true,
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
     fork in tut := true,

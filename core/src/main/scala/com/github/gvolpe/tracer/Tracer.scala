@@ -25,7 +25,7 @@ import org.http4s.syntax.StringSyntax
 import org.http4s.{Header, HttpService, Request, Response}
 
 /**
-  * [[org.http4s.server.HttpMiddleware]] that either tries to get a Trace-Id from the headers or otherwise
+  * `org.http4s.server.HttpMiddleware` that either tries to get a Trace-Id from the headers or otherwise
   * creates one with a unique Time-based UUID value, adds it to the headers and logs the http request and
   * http response with it.
   *
