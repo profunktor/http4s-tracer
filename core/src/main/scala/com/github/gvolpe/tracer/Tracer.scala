@@ -64,7 +64,7 @@ object Tracer extends StringSyntax {
         mi       <- OptionT.liftF(getTraceId(req))
         (tr, id) <- mi.fold(OptionT.liftF(createId)){ id => OptionT.liftF((req, id).pure[F]) }
         _        <- OptionT.liftF(L.info[Tracer.type](s"$req").run(id))
-        rs       <- service(tr)
+        rs       <- service(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
         _        <- OptionT.liftF(L.info[Tracer.type](s"$rs").run(id))
       } yield rs
     }
