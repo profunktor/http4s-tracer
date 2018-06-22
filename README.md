@@ -1,7 +1,7 @@
 http4s-tracer
 =============
 
-It provides an `HttpMiddleware` that adds a `Trace-Id` header with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
+It provides an `HttpMiddleware` that adds a `Trace-Id` header (name can be customized) with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
 
 Quite useful to trace the flow of your application starting out at each request. For example, given a `UsersHttpRoutes`, `UserAlgebra` and `UserRepository` you'll get an activity log like the following when trying to create a user:
 

@@ -16,8 +16,10 @@
 
 package com.github.gvolpe.tracer.auth
 
-import cats.Applicative
+import cats.Monad
 import cats.data.{Kleisli, OptionT}
+import cats.syntax.flatMap._
+import cats.syntax.functor._
 import com.github.gvolpe.tracer.Tracer
 import com.github.gvolpe.tracer.Tracer.TraceId
 import org.http4s.{AuthedRequest, AuthedService, Response}
@@ -25,9 +27,16 @@ import org.http4s.{AuthedRequest, AuthedService, Response}
 object AuthTracedHttpRoute {
   case class AuthTracedRequest[F[_], T](traceId: TraceId, request: AuthedRequest[F, T])
 
-  def apply[T, F[_]: Applicative](pf: PartialFunction[AuthTracedRequest[F, T], F[Response[F]]]): AuthedService[T, F] =
+  def apply[T, F[_]: Monad](pf: PartialFunction[AuthTracedRequest[F, T], F[Response[F]]]): AuthedService[T, F] =
     Kleisli[OptionT[F, ?], AuthedRequest[F, T], Response[F]] { req =>
-      val tracedReq = AuthTracedRequest[F, T](Tracer.getTraceId[F](req.req), req)
-      pf.andThen(OptionT.liftF(_)).applyOrElse(tracedReq, Function.const(OptionT.none))
+      OptionT {
+        Tracer
+          .getTraceId[F](req.req)
+          .map(x => AuthTracedRequest[F, T](x.getOrElse(TraceId("-")), req))
+          .flatMap { tr =>
+            val rs: OptionT[F, Response[F]] = pf.andThen(OptionT.liftF(_)).applyOrElse(tr, Function.const(OptionT.none))
+            rs.value
+          }
+      }
     }
 }
