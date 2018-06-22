@@ -1,0 +1,21 @@
+language:
+  - scala
+
+scala:
+  - 2.11.12
+  - 2.12.4
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+
+before_cache:
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
+
+script:
+  - sbt clean test

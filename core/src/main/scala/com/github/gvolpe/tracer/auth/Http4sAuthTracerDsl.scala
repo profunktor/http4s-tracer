@@ -19,3 +19,7 @@ package com.github.gvolpe.tracer.auth
 import org.http4s.dsl.Http4sDsl
 
 trait Http4sAuthTracerDsl[F[_]] extends Http4sDsl[F] with AuthTracerDsl
+
+object Http4sAuthTracerDsl {
+  def apply[F[_]]: Http4sAuthTracerDsl[F] = new Http4sAuthTracerDsl[F] {}
+}

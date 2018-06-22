@@ -38,7 +38,7 @@ class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
         .run(traceId)
         .flatMap(user => Ok(user))
         .handleErrorWith {
-          case UserNotFound(_) => NotFound(username)
+          case UserNotFound(u) => NotFound(u.value)
         }
 
     case tr @ POST -> Root using traceId =>
@@ -48,7 +48,7 @@ class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
           .run(traceId)
           .flatMap(_ => Created())
           .handleErrorWith {
-            case UserAlreadyExists(_) => Conflict(user.username.value)
+            case UserAlreadyExists(u) => Conflict(u.value)
           }
       }
   }
