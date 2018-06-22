@@ -140,6 +140,7 @@ lazy val microsite = project.in(file("site"))
       "white-color"       -> "#FFFFFF"
     ),
     micrositeGitterChannel := true,
+    micrositeGitterChannelUrl := "http4s-tracer/http4s-tracer",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
     fork in tut := true,
