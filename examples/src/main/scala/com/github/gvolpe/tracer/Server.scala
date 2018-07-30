@@ -16,6 +16,7 @@
 
 package com.github.gvolpe.tracer
 
+import cats.data.OptionT
 import cats.effect.{ConcurrentEffect, IO}
 import fs2.StreamApp.ExitCode
 import fs2.{Stream, StreamApp}
@@ -32,7 +33,7 @@ class HttpServer[F[_]: ConcurrentEffect] extends StreamApp[F] {
       ctx <- Stream(new Module[F])
       exitCode <- BlazeBuilder[F]
                    .bindHttp(8080, "0.0.0.0")
-                   .mountService(ctx.routes)
+                   .mountService(ctx.httpApp.mapF(OptionT.liftF(_)))
                    .serve
     } yield exitCode
 
