@@ -17,16 +17,24 @@
 package com.github.gvolpe.tracer
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
+import cats.syntax.applicative._
+import com.github.gvolpe.tracer.Tracer.{KFX, TraceIdHeaderName}
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.http.UserRoutes
-import com.github.gvolpe.tracer.interpreter.UserTracerInterpreter
 import com.github.gvolpe.tracer.instances.tracerlog._
+import com.github.gvolpe.tracer.interpreter.UserTracerInterpreter
 import com.github.gvolpe.tracer.repository.UserTracerRepository
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import com.github.gvolpe.tracer.typeclasses.Ask
 import org.http4s.HttpRoutes
 
 class Module[F[_]: Sync] {
+
+  // Header name can be customized if an instance of Ask[F, TraceIdHeaderName] is provided. Default name is "Trace-Id".
+  private implicit val ask: Ask[F, TraceIdHeaderName] =
+    new Ask[F, TraceIdHeaderName] {
+      override def ask: F[TraceIdHeaderName] = TraceIdHeaderName("Flow-Id").pure[F]
+    }
 
   private val repo: UserRepository[KFX[F, ?]] =
     new UserTracerRepository[F]
@@ -38,6 +46,6 @@ class Module[F[_]: Sync] {
     new UserRoutes[F](service).routes
 
   val routes: HttpRoutes[F] =
-    Tracer(httpRoutes, headerName = "Flow-Id") // Header name is optional, default to "Trace-Id"
+    Tracer[F](httpRoutes)
 
 }

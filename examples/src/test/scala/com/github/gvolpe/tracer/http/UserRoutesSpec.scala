@@ -17,16 +17,20 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.IO
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.Tracer.{KFX, TraceIdHeaderName}
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.TestUserRepository
+import com.github.gvolpe.tracer.typeclasses.Ask
 import io.circe.generic.auto._
 import org.http4s.Method._
 import org.http4s.{Request, Status, Uri}
 import org.scalatest.prop.TableFor3
 
 class UserRoutesSpec extends HttpRoutesSpec {
+
+  private implicit val ask: Ask[IO, TraceIdHeaderName] =
+    Ask.headerNameDefaultInstance
 
   private val repo    = new TestUserRepository[KFX[IO, ?]]
   private val program = new UserProgram[KFX[IO, ?]](repo)

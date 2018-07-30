@@ -18,16 +18,17 @@ package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.Tracer.{KFX, TraceIdHeaderName}
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
+import com.github.gvolpe.tracer.typeclasses.Ask
 import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute}
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.server.Router
 
-class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
+class UserRoutes[F[_]: Sync: Ask[?[_], TraceIdHeaderName]](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
 
   private[http] val PathPrefix = "/users"
 
