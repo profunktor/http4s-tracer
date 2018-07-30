@@ -19,13 +19,13 @@ package com.github.gvolpe.tracer.http
 import cats.effect.IO
 import com.github.gvolpe.tracer.IOAssertion
 import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.{HttpService, Request, Status}
+import org.http4s.{HttpRoutes, Request, Status}
 import org.scalatest.{Assertion, FunSuite}
 import org.scalatest.prop.{PropertyChecks, TableFor3}
 
 class HttpRoutesSpec extends FunSuite with PropertyChecks with Http4sClientDsl[IO] {
 
-  def propertySpec(requests: TableFor3[String, IO[Request[IO]], Status], routes: HttpService[IO]): Unit =
+  def propertySpec(requests: TableFor3[String, IO[Request[IO]], Status], routes: HttpRoutes[IO]): Unit =
     forAll(requests) { (description, request, expectedStatus) =>
       test(description) {
         IOAssertion {

@@ -24,7 +24,7 @@ import com.github.gvolpe.tracer.interpreter.UserTracerInterpreter
 import com.github.gvolpe.tracer.instances.tracerlog._
 import com.github.gvolpe.tracer.repository.UserTracerRepository
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
-import org.http4s.HttpService
+import org.http4s.HttpRoutes
 
 class Module[F[_]: Sync] {
 
@@ -34,10 +34,10 @@ class Module[F[_]: Sync] {
   private val service: UserAlgebra[KFX[F, ?]] =
     new UserTracerInterpreter[F](repo)
 
-  private val httpRoutes: HttpService[F] =
+  private val httpRoutes: HttpRoutes[F] =
     new UserRoutes[F](service).routes
 
-  val routes: HttpService[F] =
+  val routes: HttpRoutes[F] =
     Tracer(httpRoutes, headerName = "Flow-Id") // Header name is optional, default to "Trace-Id"
 
 }

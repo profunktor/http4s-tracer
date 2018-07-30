@@ -21,12 +21,12 @@ import cats.data.{Kleisli, OptionT}
 import cats.syntax.flatMap._
 import cats.syntax.functor._
 import com.github.gvolpe.tracer.Tracer.TraceId
-import org.http4s.{HttpService, Request, Response}
+import org.http4s.{HttpRoutes, Request, Response}
 
 object TracedHttpRoute {
   case class TracedRequest[F[_]](traceId: TraceId, request: Request[F])
 
-  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpService[F] =
+  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpRoutes[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       OptionT {
         Tracer

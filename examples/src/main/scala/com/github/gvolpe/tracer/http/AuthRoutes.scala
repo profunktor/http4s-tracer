@@ -38,7 +38,7 @@ class AuthRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
 
   lazy val authMiddleware: AuthMiddleware[F, String] = ???
 
-  lazy val routes: HttpService[F] = Router(
+  lazy val routes: HttpRoutes[F] = Router(
     PathPrefix -> authMiddleware(httpRoutes)
   )
 
