@@ -42,7 +42,7 @@
 
 <h4 id="user-tracer-interpreter">User Tracer Interpreter</h4>
 
-<p>And an <code class="highlighter-rouge">interpreter</code> that just adds the tracing log part to it, by following a <code class="highlighter-rouge">tagless final</code> design:</p>
+<p>And an <code class="highlighter-rouge">interpreter</code> that just adds the tracing log part to it, by following a <code class="highlighter-rouge">tagless final</code> encoding:</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.github.gvolpe.tracer.Tracer.KFX</span>
 <span class="k">import</span> <span class="nn">com.github.gvolpe.tracer._</span>
@@ -68,6 +68,7 @@
 <span class="k">import</span> <span class="nn">io.circe.generic.extras.encoding.UnwrappedEncoder</span>
 <span class="k">import</span> <span class="nn">org.http4s._</span>
 <span class="k">import</span> <span class="nn">org.http4s.circe._</span>
+<span class="k">import</span> <span class="nn">org.http4s.implicits._</span>
 
 <span class="k">class</span> <span class="nc">UserRoutes</span><span class="o">[</span><span class="kt">F</span><span class="o">[</span><span class="k">_</span><span class="o">]</span><span class="kt">:</span> <span class="kt">Sync</span><span class="o">](</span><span class="n">userService</span><span class="k">:</span> <span class="kt">UserAlgebra</span><span class="o">[</span><span class="kt">KFX</span><span class="o">[</span><span class="kt">F</span>, <span class="kt">?</span><span class="o">]])</span> <span class="k">extends</span> <span class="nc">Http4sTracerDsl</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span> <span class="o">{</span>
 
@@ -90,8 +91,8 @@
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.github.gvolpe.tracer.instances.tracerlog._</span>
 
-<span class="k">val</span> <span class="n">userRoutes</span><span class="k">:</span> <span class="kt">HttpService</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">UserRoutes</span><span class="o">[</span><span class="kt">IO</span><span class="o">](</span><span class="n">userService</span><span class="o">).</span><span class="n">routes</span>
-<span class="k">val</span> <span class="n">routes</span><span class="k">:</span> <span class="kt">HttpService</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Tracer</span><span class="o">(</span><span class="n">userRoutes</span><span class="o">,</span> <span class="n">headerName</span> <span class="k">=</span> <span class="s">"MyAppId"</span><span class="o">)</span> <span class="c1">// Customizable Header name, default "Trace-Id"
+<span class="k">val</span> <span class="n">routes</span><span class="k">:</span> <span class="kt">HttpRoutes</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">UserRoutes</span><span class="o">[</span><span class="kt">IO</span><span class="o">](</span><span class="n">userService</span><span class="o">).</span><span class="n">routes</span>
+<span class="k">val</span> <span class="n">httpApp</span><span class="k">:</span> <span class="kt">HttpApp</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Tracer</span><span class="o">(</span><span class="n">routes</span><span class="o">.</span><span class="n">orNotFound</span><span class="o">,</span> <span class="n">headerName</span> <span class="k">=</span> <span class="s">"MyAppId"</span><span class="o">)</span> <span class="c1">// Customizable Header name, default "Trace-Id"
 </span></code></pre></div></div>
 
 <p>Notice that an implicit instance of <code class="highlighter-rouge">TracerLog[F]</code> is needed for <code class="highlighter-rouge">Tracer.apply</code>. You can either provide your own or just use the default one that uses a <code class="highlighter-rouge">org.slf4j.Logger</code> instance to log the trace of your application.</p>
