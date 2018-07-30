@@ -22,7 +22,7 @@ import cats.effect.Sync
 import cats.syntax.all._
 import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
-import org.http4s.{Header, HttpService, Request, Response}
+import org.http4s.{Header, HttpRoutes, Request, Response}
 
 /**
   * `org.http4s.server.HttpMiddleware` that either tries to get a Trace-Id from the headers or otherwise
@@ -50,8 +50,8 @@ object Tracer extends StringSyntax {
   type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
   // format: off
-  def apply[F[_]](service: HttpService[F], headerName: String = DefaultTraceIdHeader)
-                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpService[F] =
+  def apply[F[_]](service: HttpRoutes[F], headerName: String = DefaultTraceIdHeader)
+                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpRoutes[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       val createId: F[(Request[F], TraceId)] =
         for {

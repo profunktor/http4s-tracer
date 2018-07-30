@@ -16,26 +16,24 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect.{Effect, IO}
+import cats.effect.{ConcurrentEffect, IO}
 import fs2.StreamApp.ExitCode
-import fs2.{Scheduler, Stream, StreamApp}
+import fs2.{Stream, StreamApp}
 import org.http4s.server.blaze.BlazeBuilder
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Server extends HttpServer[IO]
 
-class HttpServer[F[_]: Effect] extends StreamApp[F] {
+class HttpServer[F[_]: ConcurrentEffect] extends StreamApp[F] {
 
   override def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] =
-    Scheduler(corePoolSize = 2).flatMap { implicit scheduler =>
-      for {
-        ctx <- Stream(new Module[F])
-        exitCode <- BlazeBuilder[F]
-                     .bindHttp(8080, "0.0.0.0")
-                     .mountService(ctx.routes)
-                     .serve
-      } yield exitCode
-    }
+    for {
+      ctx <- Stream(new Module[F])
+      exitCode <- BlazeBuilder[F]
+                   .bindHttp(8080, "0.0.0.0")
+                   .mountService(ctx.routes)
+                   .serve
+    } yield exitCode
 
 }
