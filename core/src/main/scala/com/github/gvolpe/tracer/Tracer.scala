@@ -42,8 +42,8 @@ import org.http4s.{Header, HttpApp, Request}
   * */
 object Tracer extends StringSyntax {
 
-  private val DefaultTraceIdHeader = "Trace-Id"
-  private var TraceIdHeader        = DefaultTraceIdHeader
+  private[tracer] val DefaultTraceIdHeader = "Trace-Id"
+  private var TraceIdHeader                = DefaultTraceIdHeader
 
   final case class TraceId(value: String) extends AnyVal
 
