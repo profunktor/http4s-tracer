@@ -101,6 +101,7 @@ lazy val noPublish = Seq(
 
 lazy val `http4s-tracer` = project.in(file("core"))
   .settings(commonSettings: _*)
+  .settings(libraryDependencies += Libraries.http4sClient % Test)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val examples = project.in(file("examples"))
