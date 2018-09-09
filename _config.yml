@@ -6,6 +6,6 @@ docs: true
 collections:
   tut:
     output: true
-version: 1.0-M2
+version: 1.0-M3
 org: com.github.gvolpe
 markdown: kramdown
