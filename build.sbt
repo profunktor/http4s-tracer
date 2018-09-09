@@ -7,7 +7,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "com.github.gvolpe"
 
-version in ThisBuild := "1.0-M2"
+version in ThisBuild := "1.0-M3"
 
 crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.6")
 

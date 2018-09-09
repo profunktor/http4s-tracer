@@ -16,25 +16,21 @@
 
 package com.github.gvolpe.tracer
 
-import cats.data.OptionT
-import cats.effect.{ConcurrentEffect, IO}
-import fs2.StreamApp.ExitCode
-import fs2.{Stream, StreamApp}
-import org.http4s.server.blaze.BlazeBuilder
+import cats.effect.{ExitCode, IO, IOApp}
+import cats.syntax.functor._
+import org.http4s.server.blaze.BlazeServerBuilder
 
-import scala.concurrent.ExecutionContext.Implicits.global
+object Server extends IOApp {
 
-object Server extends HttpServer[IO]
+  private val ctx = new Module[IO]
 
-class HttpServer[F[_]: ConcurrentEffect] extends StreamApp[F] {
-
-  override def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] =
-    for {
-      ctx <- Stream(new Module[F])
-      exitCode <- BlazeBuilder[F]
-                   .bindHttp(8080, "0.0.0.0")
-                   .mountService(ctx.httpApp.mapF(OptionT.liftF(_)))
-                   .serve
-    } yield exitCode
+  override def run(args: List[String]): IO[ExitCode] =
+    BlazeServerBuilder[IO]
+      .bindHttp(8080, "0.0.0.0")
+      .withHttpApp(ctx.httpApp)
+      .serve
+      .compile
+      .drain
+      .as(ExitCode.Success)
 
 }
