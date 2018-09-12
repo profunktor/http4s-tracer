@@ -29,6 +29,8 @@ import org.http4s.implicits._
 
 class Module[F[_]: Sync] {
 
+  implicit val tracerContext = DefaultTracerContext // Default Header name is "Trace-Id"
+
   private val repo: UserRepository[KFX[F, ?]] =
     new UserTracerRepository[F]
 
@@ -39,6 +41,6 @@ class Module[F[_]: Sync] {
     new UserRoutes[F](service).routes
 
   val httpApp: HttpApp[F] =
-    Tracer(httpRoutes.orNotFound, headerName = "Flow-Id") // Header name is optional, default to "Trace-Id"
+    Tracer(httpRoutes.orNotFound)
 
 }

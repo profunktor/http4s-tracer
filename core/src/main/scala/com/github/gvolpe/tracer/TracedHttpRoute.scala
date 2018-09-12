@@ -26,7 +26,8 @@ import org.http4s.{HttpRoutes, Request, Response}
 object TracedHttpRoute {
   case class TracedRequest[F[_]](traceId: TraceId, request: Request[F])
 
-  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpRoutes[F] =
+  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]])(
+      implicit TC: TracerContext): HttpRoutes[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       OptionT {
         Tracer

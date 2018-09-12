@@ -42,34 +42,30 @@ import org.http4s.{Header, HttpApp, Request}
   * */
 object Tracer extends StringSyntax {
 
-  private[tracer] val DefaultTraceIdHeader = "Trace-Id"
-  private var TraceIdHeader                = DefaultTraceIdHeader
-
   final case class TraceId(value: String) extends AnyVal
 
   type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
   // format: off
-  def apply[F[_]](http: HttpApp[F], headerName: String = DefaultTraceIdHeader)
-                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpApp[F] =
+  def apply[F[_]](http: HttpApp[F])
+                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]], TC: TracerContext): HttpApp[F] =
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
           id <- F.delay(TraceId(TimeUuid().toString))
-          tr <- F.delay(req.putHeaders(Header(TraceIdHeader, id.value)))
+          tr <- F.delay(req.putHeaders(Header(TC.headerName, id.value)))
         } yield (tr, id)
 
       for {
-        _        <- F.delay(TraceIdHeader = headerName)
         mi       <- getTraceId(req)
         (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
         _        <- L.info[Tracer.type](s"$req").run(id)
-        rs       <- http(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
+        rs       <- http(tr).map(_.putHeaders(Header(TC.headerName, id.value)))
         _        <- L.info[Tracer.type](s"$rs").run(id)
       } yield rs
     }
 
-  def getTraceId[F[_]: Applicative](request: Request[F]): F[Option[TraceId]] =
-    request.headers.get(TraceIdHeader.ci).map(h => TraceId(h.value)).pure[F]
+  def getTraceId[F[_]: Applicative](request: Request[F])(implicit TC: TracerContext): F[Option[TraceId]] =
+    request.headers.get(TC.headerName.ci).map(h => TraceId(h.value)).pure[F]
 
 }
