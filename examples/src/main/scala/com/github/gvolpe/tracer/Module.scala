@@ -17,7 +17,7 @@
 package com.github.gvolpe.tracer
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.http.UserRoutes
 import com.github.gvolpe.tracer.interpreter.UserTracerInterpreter

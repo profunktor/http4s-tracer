@@ -16,10 +16,11 @@
 
 package com.github.gvolpe.tracer
 
-import scala.reflect.ClassTag
+import cats.data.Kleisli
+import Tracer.TraceId
 
-trait TracerLog[F[_]] {
-  def info[A: ClassTag](value: String): F[Unit]
-  def error[A: ClassTag](value: String): F[Unit]
-  def warn[A: ClassTag](value: String): F[Unit]
+object KFX {
+  type KFX[F[_], A] = Kleisli[F, TraceId, A]
+
+  def apply[F[_], A](run: TraceId => F[A]): KFX[F, A] = Kleisli[F, TraceId, A](run)
 }

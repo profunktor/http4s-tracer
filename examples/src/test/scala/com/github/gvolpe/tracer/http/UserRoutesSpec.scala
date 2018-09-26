@@ -17,7 +17,7 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.IO
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.TestUserRepository

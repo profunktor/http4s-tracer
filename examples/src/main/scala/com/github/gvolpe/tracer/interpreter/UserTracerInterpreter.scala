@@ -17,7 +17,7 @@
 package com.github.gvolpe.tracer.interpreter
 
 import cats.MonadError
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
