@@ -42,12 +42,12 @@ import org.http4s.{Header, HttpApp, Request}
   * */
 object Tracer extends StringSyntax {
 
+  import KFX._
+
   private[tracer] val DefaultTraceIdHeader = "Trace-Id"
   private var TraceIdHeader                = DefaultTraceIdHeader
 
   final case class TraceId(value: String) extends AnyVal
-
-  type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
   // format: off
   def apply[F[_]](http: HttpApp[F], headerName: String = DefaultTraceIdHeader)

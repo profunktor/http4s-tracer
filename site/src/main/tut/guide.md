@@ -55,7 +55,7 @@ class UserProgram[F[_]](repo: UserRepository[F])(implicit F: MonadError[F, Throw
 And an `interpreter` that just adds the tracing log part to it, by following a `tagless final` encoding:
 
 ```tut:book:silent
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer._
 
 class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])(implicit F: MonadError[F, Throwable], L: TracerLog[KFX[F, ?]]) extends UserProgram[KFX[F, ?]](repo) {

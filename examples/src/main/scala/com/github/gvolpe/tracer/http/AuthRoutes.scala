@@ -17,7 +17,7 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.auth.{AuthTracedHttpRoute, Http4sAuthTracerDsl}
 import io.circe.generic.auto._
