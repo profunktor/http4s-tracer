@@ -24,39 +24,6 @@
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">http4s-tracer</code> has the following dependencies:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Dependency</th>
-      <th style="text-align: center">Version</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>cats</td>
-      <td style="text-align: center">1.3.1</td>
-    </tr>
-    <tr>
-      <td>cats-effect</td>
-      <td style="text-align: center">1.0.0</td>
-    </tr>
-    <tr>
-      <td>fs2</td>
-      <td style="text-align: center">1.0.0-RC1</td>
-    </tr>
-    <tr>
-      <td>gfc-timeuuid</td>
-      <td style="text-align: center">0.0.8</td>
-    </tr>
-    <tr>
-      <td>http4s</td>
-      <td style="text-align: center">0.19.0-M3</td>
-    </tr>
-  </tbody>
-</table>
-
 <h3 id="credits">Credits</h3>
 
 <p>This is an idea I first heard from <a href="https://twitter.com/etorreborre">Eric Torreborre</a>, also described in <a href="http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html">his Haskell setup</a> by defining a newtype <code class="highlighter-rouge">RIO</code> (a.k.a. <code class="highlighter-rouge">Reader IO Monad</code>) and inspired bt the <a href="https://www.fpcomplete.com/blog/2017/07/the-rio-monad">RIO Monad</a> described by <a href="https://github.com/snoyberg">Michael Snoyman</a> the year before. However, this implementation is adapted to work nicely with <code class="highlighter-rouge">Http4s</code> while abstracting over the effect type using <code class="highlighter-rouge">Cats Effect</code> and where the main type is defined as <code class="highlighter-rouge">type KFX[F[_], A] = Kleisli[F, TraceId, A]</code>, a bit simpler than how <code class="highlighter-rouge">RIO</code> is actually defined because it’s also doing less (just carrying a <code class="highlighter-rouge">TraceId</code> around).</p>
