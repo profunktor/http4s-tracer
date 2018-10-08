@@ -17,12 +17,12 @@
 package com.github.gvolpe.tracer
 
 import cats.Applicative
-import cats.data.{Kleisli, OptionT}
+import cats.data.Kleisli
 import cats.effect.Sync
 import cats.syntax.all._
 import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
-import org.http4s.{Header, HttpService, Request, Response}
+import org.http4s.{Header, HttpApp, Request}
 
 /**
   * `org.http4s.server.HttpMiddleware` that either tries to get a Trace-Id from the headers or otherwise
@@ -42,17 +42,19 @@ import org.http4s.{Header, HttpService, Request, Response}
   * */
 object Tracer extends StringSyntax {
 
-  private val DefaultTraceIdHeader = "Trace-Id"
-  private var TraceIdHeader        = DefaultTraceIdHeader
+  import KFX._
+
+  private[tracer] val DefaultTraceIdHeader = "Trace-Id"
+  private var TraceIdHeader                = DefaultTraceIdHeader
 
   final case class TraceId(value: String) extends AnyVal
 
-  type KFX[F[_], A] = Kleisli[F, TraceId, A]
+  type Tracer = Tracer.type
 
   // format: off
-  def apply[F[_]](service: HttpService[F], headerName: String = DefaultTraceIdHeader)
-                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpService[F] =
-    Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
+  def apply[F[_]](http: HttpApp[F], headerName: String = DefaultTraceIdHeader)
+                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpApp[F] =
+    Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
           id <- F.delay(TraceId(TimeUuid().toString))
@@ -60,12 +62,12 @@ object Tracer extends StringSyntax {
         } yield (tr, id)
 
       for {
-        _        <- OptionT.liftF(F.delay(TraceIdHeader = headerName))
-        mi       <- OptionT.liftF(getTraceId(req))
-        (tr, id) <- mi.fold(OptionT.liftF(createId)){ id => OptionT.liftF((req, id).pure[F]) }
-        _        <- OptionT.liftF(L.info[Tracer.type](s"$req").run(id))
-        rs       <- service(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
-        _        <- OptionT.liftF(L.info[Tracer.type](s"$rs").run(id))
+        _        <- F.delay(TraceIdHeader = headerName)
+        mi       <- getTraceId(req)
+        (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
+        _        <- L.info[Tracer](s"$req").run(id)
+        rs       <- http(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
+        _        <- L.info[Tracer](s"$rs").run(id)
       } yield rs
     }
 

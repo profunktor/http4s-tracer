@@ -17,7 +17,7 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.auth.{AuthTracedHttpRoute, Http4sAuthTracerDsl}
 import io.circe.generic.auto._
@@ -38,7 +38,7 @@ class AuthRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
 
   lazy val authMiddleware: AuthMiddleware[F, String] = ???
 
-  lazy val routes: HttpService[F] = Router(
+  lazy val routes: HttpRoutes[F] = Router(
     PathPrefix -> authMiddleware(httpRoutes)
   )
 

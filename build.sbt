@@ -7,9 +7,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "com.github.gvolpe"
 
-version in ThisBuild := "0.2"
-
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.6")
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.7")
 
 sonatypeProfileName := "com.github.gvolpe"
 
@@ -101,6 +99,7 @@ lazy val noPublish = Seq(
 
 lazy val `http4s-tracer` = project.in(file("core"))
   .settings(commonSettings: _*)
+  .settings(libraryDependencies += Libraries.http4sClient % Test)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val examples = project.in(file("examples"))

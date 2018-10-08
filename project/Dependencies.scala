@@ -3,10 +3,10 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val catsEffect  = "0.10.1"
-    val fs2         = "0.10.4"
-    val http4s      = "0.18.12"
-    val circe       = "0.9.3"
+    val catsEffect  = "1.0.0"
+    val fs2         = "1.0.0"
+    val http4s      = "0.19.0-M4"
+    val circe       = "0.10.0"
     val gfcTimeuuid = "0.0.8"
 
     // Test
@@ -14,7 +14,7 @@ object Dependencies {
     val scalaCheck  = "1.13.5"
 
     // Compiler
-    val kindProjector     = "0.9.5"
+    val kindProjector     = "0.9.7"
     val betterMonadicFor  = "0.2.4"
 
     // Runtime

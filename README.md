@@ -31,11 +31,11 @@ libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
 
 | Dependency   | Version    |
 | ------------ |:----------:|
-| cats         | 1.1.1      |
-| cats-effect  | 0.10.1     |
-| fs2          | 0.10.4     |
+| cats         | 1.3.1      |
+| cats-effect  | 1.0.0      |
+| fs2          | 1.0.0-RC1  |
 | gfc-timeuuid | 0.0.8      |
-| http4s       | 0.18.12    |
+| http4s       | 0.19.0-M3  |
 
 ### Credits
 

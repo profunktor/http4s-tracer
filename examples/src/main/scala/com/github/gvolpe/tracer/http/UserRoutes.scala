@@ -18,7 +18,7 @@ package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
@@ -31,7 +31,7 @@ class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
 
   private[http] val PathPrefix = "/users"
 
-  private val httpRoutes: HttpService[F] = TracedHttpRoute[F] {
+  private val httpRoutes: HttpRoutes[F] = TracedHttpRoute[F] {
     case GET -> Root / username using traceId =>
       userService
         .find(Username(username))
@@ -53,7 +53,7 @@ class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
       }
   }
 
-  val routes: HttpService[F] = Router(
+  val routes: HttpRoutes[F] = Router(
     PathPrefix -> httpRoutes
   )
 

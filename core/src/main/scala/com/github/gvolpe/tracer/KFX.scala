@@ -16,21 +16,11 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.functor._
-import org.http4s.server.blaze.BlazeServerBuilder
+import cats.data.Kleisli
+import Tracer.TraceId
 
-object Server extends IOApp {
+object KFX {
+  type KFX[F[_], A] = Kleisli[F, TraceId, A]
 
-  private val ctx = new Module[IO]
-
-  override def run(args: List[String]): IO[ExitCode] =
-    BlazeServerBuilder[IO]
-      .bindHttp(8080, "0.0.0.0")
-      .withHttpApp(ctx.httpApp)
-      .serve
-      .compile
-      .drain
-      .as(ExitCode.Success)
-
+  def apply[F[_], A](run: TraceId => F[A]): KFX[F, A] = Kleisli[F, TraceId, A](run)
 }

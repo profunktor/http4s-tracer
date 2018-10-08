@@ -16,9 +16,10 @@
 
 package com.github.gvolpe.tracer.instances
 
-import cats.data.Kleisli
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Tracer.KFX
+import cats.syntax.flatMap._
+import com.github.gvolpe.tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer.TracerLog
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -28,19 +29,19 @@ object tracerlog {
 
   implicit def defaultLog[F[_]](implicit F: Sync[F]): TracerLog[KFX[F, ?]] =
     new TracerLog[KFX[F, ?]] {
-      def logger[A](implicit ct: ClassTag[A]): Logger =
-        LoggerFactory.getLogger(ct.runtimeClass)
+      def logger[A](implicit ct: ClassTag[A]): F[Logger] =
+        F.delay(LoggerFactory.getLogger(ct.runtimeClass))
 
-      override def info[A: ClassTag](value: String): KFX[F, Unit] = Kleisli { id =>
-        F.delay(logger[A].info(s"$id >> $value"))
+      override def info[A: ClassTag](value: String): KFX[F, Unit] = KFX { id =>
+        logger[A].flatMap(log => F.delay(log.info(s"$id >> $value")))
       }
 
-      override def error[A: ClassTag](error: Exception): KFX[F, Unit] = Kleisli { id =>
-        F.delay(logger[A].error(s"$id >> ${error.getMessage}"))
+      override def error[A: ClassTag](value: String): KFX[F, Unit] = KFX { id =>
+        logger[A].flatMap(log => F.delay(log.error(s"$id >> $value")))
       }
 
-      override def warn[A: ClassTag](value: String): KFX[F, Unit] = Kleisli { id =>
-        F.delay(logger[A].warn(s"$id >> $value"))
+      override def warn[A: ClassTag](value: String): KFX[F, Unit] = KFX { id =>
+        logger[A].flatMap(log => F.delay(log.warn(s"$id >> $value")))
       }
     }
 

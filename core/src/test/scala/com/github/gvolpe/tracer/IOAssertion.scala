@@ -16,21 +16,9 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect.IO
 import cats.syntax.functor._
-import org.http4s.server.blaze.BlazeServerBuilder
 
-object Server extends IOApp {
-
-  private val ctx = new Module[IO]
-
-  override def run(args: List[String]): IO[ExitCode] =
-    BlazeServerBuilder[IO]
-      .bindHttp(8080, "0.0.0.0")
-      .withHttpApp(ctx.httpApp)
-      .serve
-      .compile
-      .drain
-      .as(ExitCode.Success)
-
+object IOAssertion {
+  def apply[A](ioa: IO[A]): Unit = ioa.void.unsafeRunSync
 }

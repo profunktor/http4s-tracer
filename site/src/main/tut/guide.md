@@ -52,10 +52,10 @@ class UserProgram[F[_]](repo: UserRepository[F])(implicit F: MonadError[F, Throw
 
 #### User Tracer Interpreter
 
-And an `interpreter` that just adds the tracing log part to it, by following a `tagless final` design:
+And an `interpreter` that just adds the tracing log part to it, by following a `tagless final` encoding:
 
 ```tut:book:silent
-import com.github.gvolpe.tracer.Tracer.KFX
+import com.github.gvolpe.tracer.KFX._
 import com.github.gvolpe.tracer._
 
 class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])(implicit F: MonadError[F, Throwable], L: TracerLog[KFX[F, ?]]) extends UserProgram[KFX[F, ?]](repo) {
@@ -80,6 +80,7 @@ import io.circe.generic.auto._
 import io.circe.generic.extras.encoding.UnwrappedEncoder
 import org.http4s._
 import org.http4s.circe._
+import org.http4s.implicits._
 
 class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
 
@@ -107,8 +108,8 @@ val userService: UserAlgebra[KFX[IO, ?]] = null
 ```tut:book:silent
 import com.github.gvolpe.tracer.instances.tracerlog._
 
-val userRoutes: HttpService[IO] = new UserRoutes[IO](userService).routes
-val routes: HttpService[IO] = Tracer(userRoutes, headerName = "MyAppId") // Customizable Header name, default "Trace-Id"
+val routes: HttpRoutes[IO] = new UserRoutes[IO](userService).routes
+val httpApp: HttpApp[IO] = Tracer(routes.orNotFound, headerName = "MyAppId") // Customizable Header name, default "Trace-Id"
 ```
 
 Notice that an implicit instance of `TracerLog[F]` is needed for `Tracer.apply`. You can either provide your own or just use the default one that uses a `org.slf4j.Logger` instance to log the trace of your application.
