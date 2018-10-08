@@ -27,16 +27,6 @@ Add this to your `build.sbt`:
 libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
 ```
 
-`http4s-tracer` has the following dependencies:
-
-| Dependency   | Version    |
-| ------------ |:----------:|
-| cats         | 1.3.1      |
-| cats-effect  | 1.0.0      |
-| fs2          | 1.0.0-RC1  |
-| gfc-timeuuid | 0.0.8      |
-| http4s       | 0.19.0-M3  |
-
 ### Credits
 
 This is an idea I first heard from [Eric Torreborre](https://twitter.com/etorreborre), also described in [his Haskell setup](http://etorreborre.blogspot.jp/2018/03/haskell-modules-for-masses.html) by defining a newtype `RIO` (a.k.a. `Reader IO Monad`) and inspired bt the [RIO Monad](https://www.fpcomplete.com/blog/2017/07/the-rio-monad) described by [Michael Snoyman](https://github.com/snoyberg) the year before. However, this implementation is adapted to work nicely with `Http4s` while abstracting over the effect type using `Cats Effect` and where the main type is defined as `type KFX[F[_], A] = Kleisli[F, TraceId, A]`, a bit simpler than how `RIO` is actually defined because it's also doing less (just carrying a `TraceId` around).
