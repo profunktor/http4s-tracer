@@ -49,6 +49,8 @@ object Tracer extends StringSyntax {
 
   final case class TraceId(value: String) extends AnyVal
 
+  type Tracer = Tracer.type
+
   // format: off
   def apply[F[_]](http: HttpApp[F], headerName: String = DefaultTraceIdHeader)
                  (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpApp[F] =
@@ -63,9 +65,9 @@ object Tracer extends StringSyntax {
         _        <- F.delay(TraceIdHeader = headerName)
         mi       <- getTraceId(req)
         (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
-        _        <- L.info[Tracer.type](s"$req").run(id)
+        _        <- L.info[Tracer](s"$req").run(id)
         rs       <- http(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
-        _        <- L.info[Tracer.type](s"$rs").run(id)
+        _        <- L.info[Tracer](s"$rs").run(id)
       } yield rs
     }
 
