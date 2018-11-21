@@ -36,8 +36,8 @@ class UserRoutesSpec extends HttpRoutesSpec {
     ("description", "request", "expectedStatus"),
     ("find user by username", GET(Uri(path = "/users/gvolpe")), Status.Ok),
     ("not find user by username", GET(Uri(path = "/users/xxx")), Status.NotFound),
-    ("create user", POST(Uri(path = "/users"), User(Username("xxx"))), Status.Created),
-    ("fail to create existent user", POST(Uri(path = "/users"), User(Username("gvolpe"))), Status.Conflict)
+    ("create user", POST(User(Username("xxx")), Uri(path = "/users")), Status.Created),
+    ("fail to create existent user", POST(User(Username("gvolpe")), Uri(path = "/users")), Status.Conflict)
   )
 
   propertySpec(requests, routes)

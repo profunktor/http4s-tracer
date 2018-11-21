@@ -21,6 +21,7 @@ import com.github.gvolpe.tracer.instances.tracerlog._
 import org.http4s._
 import org.http4s.client.dsl.io._
 import org.http4s.dsl.io._
+import org.http4s.implicits._
 import org.scalatest.FunSuite
 import org.scalatest.prop.PropertyChecks
 
