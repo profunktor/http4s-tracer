@@ -3,7 +3,7 @@ http4s-tracer
 
 [![Build Status](https://travis-ci.org/gvolpe/http4s-tracer.svg?branch=master)](https://travis-ci.org/gvolpe/http4s-tracer)
 [![Gitter Chat](https://badges.gitter.im/http4s-tracer/http4s-tracer.svg)](https://gitter.im/http4s-tracer/http4s-tracer)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.gvolpe/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.gvolpe/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer) <a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
 
 It provides an `HttpMiddleware` that adds a `Trace-Id` header (name can be customized) with a unique `UUID` value and gives you an implicit `TracerLog` for any `F[_]: Sync]` that also logs the http request and http response with it.
 
