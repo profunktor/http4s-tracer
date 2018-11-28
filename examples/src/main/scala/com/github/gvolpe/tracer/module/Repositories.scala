@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package com.github.gvolpe.tracer.module
 
-import com.github.gvolpe.tracer.model.user.{User, Username}
+import cats.effect.Sync
+import cats.syntax.functor._
+import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import com.github.gvolpe.tracer.repository.interpreter.MemUserRepository
 
-object algebra {
+trait Repositories[F[_]] {
+  def users: UserRepository[F]
+}
 
-  trait UserAlgebra[F[_]] {
-    def find(username: Username): F[User]
-    def persist(user: User): F[Unit]
-  }
+object LiveRepositories {
+  def apply[F[_]: Sync]: F[Repositories[F]] =
+    MemUserRepository.create[F].map(new LiveRepositories[F](_))
+}
 
+class LiveRepositories[F[_]](usersRepo: UserRepository[F]) extends Repositories[F] {
+  val users: UserRepository[F] = usersRepo
 }

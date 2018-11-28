@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.interpreter
+package com.github.gvolpe.tracer.tracer
 
-import cats.MonadError
-import com.github.gvolpe.tracer.Trace._
+import cats.effect.Sync
+import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
+import com.github.gvolpe.tracer.module.{Programs, Repositories}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 
-class UserTracerInterpreter[F[_]](repo: UserRepository[Trace[F, ?]])(implicit F: MonadError[F, Throwable],
-                                                                     L: TracerLog[Trace[F, ?]])
+class TracedPrograms[F[_]: Sync](repos: Repositories[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]])
+    extends Programs[Trace[F, ?]] {
+  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](repos.users)
+}
+
+class UserTracer[F[_]: Sync](
+    repo: UserRepository[Trace[F, ?]]
+)(implicit L: TracerLog[Trace[F, ?]])
     extends UserProgram[Trace[F, ?]](repo) {
 
   override def find(username: Username): Trace[F, User] =

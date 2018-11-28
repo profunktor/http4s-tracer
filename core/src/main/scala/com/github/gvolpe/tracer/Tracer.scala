@@ -16,9 +16,9 @@
 
 package com.github.gvolpe.tracer
 
-import cats.Applicative
 import cats.data.Kleisli
 import cats.effect.Sync
+import cats.effect.concurrent.Ref
 import cats.syntax.all._
 import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
@@ -31,47 +31,54 @@ import org.http4s.{Header, HttpApp, Request}
   *
   * Quite useful to trace the flow of each request. For example:
   *
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Request(method=GET, uri=/users, ...)
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserAlgebra requesting users
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> UserRepository fetching users from DB
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> MetricsService saving users metrics
-  * TraceId(72b079c8-fc92-4c4f-aa5a-c0cd91ea221c) >> Response(status=200, ...)
+  * [TraceId] - [72b079c8-fc92-4c4f-aa5a-c0cd91ea221c] - Request(method=GET, uri=/users, ...)
+  * [TraceId] - [72b079c8-fc92-4c4f-aa5a-c0cd91ea221c] - UserAlgebra requesting users
+  * [TraceId] - [72b079c8-fc92-4c4f-aa5a-c0cd91ea221c] - UserRepository fetching users from DB
+  * [TraceId] - [72b079c8-fc92-4c4f-aa5a-c0cd91ea221c] - MetricsService saving users metrics
+  * [TraceId] - [72b079c8-fc92-4c4f-aa5a-c0cd91ea221c] - Response(status=200, ...)
   *
   * In a normal application, you will have thousands of requests and tracing the call chain in
   * a failure scenario will be invaluable.
   * */
 object Tracer extends StringSyntax {
 
-  import KFX._
-
   private[tracer] val DefaultTraceIdHeader = "Trace-Id"
-  private var TraceIdHeader                = DefaultTraceIdHeader
 
-  final case class TraceId(value: String) extends AnyVal
+  final case class TraceId(value: String) extends AnyVal {
+    override def toString = s"[Trace-Id] - [$value]"
+  }
 
-  type Tracer = Tracer.type
+  def apply[F[_]](implicit ev: Tracer[F]): Tracer[F] = ev
+
+  def create[F[_]: Sync](headerName: String = DefaultTraceIdHeader): F[Tracer[F]] =
+    Ref.of[F, String](headerName).map(ref => new Tracer[F](ref))
+
+}
+
+class Tracer[F[_]: Sync] private (ref: Ref[F, String]) {
+
+  import Trace._, Tracer._
 
   // format: off
-  def apply[F[_]](http: HttpApp[F], headerName: String = DefaultTraceIdHeader)
-                 (implicit F: Sync[F], L: TracerLog[KFX[F, ?]]): HttpApp[F] =
+  def middleware(http: HttpApp[F])(implicit L: TracerLog[Trace[F, ?]]): HttpApp[F] =
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
-          id <- F.delay(TraceId(TimeUuid().toString))
-          tr <- F.delay(req.putHeaders(Header(TraceIdHeader, id.value)))
+          id <- Sync[F].delay(TraceId(TimeUuid().toString))
+          tr <- ref.get.map(h => req.putHeaders(Header(h, id.value)))
         } yield (tr, id)
 
       for {
-        _        <- F.delay(TraceIdHeader = headerName)
         mi       <- getTraceId(req)
         (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
-        _        <- L.info[Tracer](s"$req").run(id)
-        rs       <- http(tr).map(_.putHeaders(Header(TraceIdHeader, id.value)))
-        _        <- L.info[Tracer](s"$rs").run(id)
+        _        <- L.info[Tracer[F]](s"$req").run(id)
+        header   <- ref.get
+        rs       <- http(tr).map(_.putHeaders(Header(header, id.value)))
+        _        <- L.info[Tracer[F]](s"$rs").run(id)
       } yield rs
     }
 
-  def getTraceId[F[_]: Applicative](request: Request[F]): F[Option[TraceId]] =
-    request.headers.get(TraceIdHeader.ci).map(h => TraceId(h.value)).pure[F]
+  def getTraceId(request: Request[F]): F[Option[TraceId]] =
+    ref.get.map(hn => request.headers.get(hn.ci).map(h => TraceId(h.value)))
 
 }

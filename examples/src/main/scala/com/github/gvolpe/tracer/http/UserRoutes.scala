@@ -18,22 +18,22 @@ package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.gvolpe.tracer.KFX._
+import com.github.gvolpe.tracer.Trace._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.program.{UserAlreadyExists, UserNotFound}
-import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute}
+import com.github.gvolpe.tracer.model.errors.UserError._
+import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.server.Router
 
-class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sTracerDsl[F] {
+class UserRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Http4sTracerDsl[F] {
 
   private[http] val PathPrefix = "/users"
 
   private val httpRoutes: HttpRoutes[F] = TracedHttpRoute[F] {
     case GET -> Root / username using traceId =>
-      userService
+      users
         .find(Username(username))
         .run(traceId)
         .flatMap(user => Ok(user))
@@ -43,7 +43,7 @@ class UserRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4s
 
     case tr @ POST -> Root using traceId =>
       tr.request.decode[User] { user =>
-        userService
+        users
           .persist(user)
           .run(traceId)
           .flatMap(_ => Created())

@@ -17,14 +17,15 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.KFX._
+import com.github.gvolpe.tracer.Trace._
+import com.github.gvolpe.tracer.Tracer
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.auth.{AuthTracedHttpRoute, Http4sAuthTracerDsl}
 import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.server.{AuthMiddleware, Router}
 
-class AuthRoutes[F[_]: Sync](userService: UserAlgebra[KFX[F, ?]]) extends Http4sAuthTracerDsl[F] {
+class AuthRoutes[F[_]: Sync: Tracer](userService: UserAlgebra[Trace[F, ?]]) extends Http4sAuthTracerDsl[F] {
 
   private[http] val PathPrefix = "/auth"
 

@@ -47,9 +47,12 @@ trait TracerFixture extends PropertyChecks {
   val customHeaderName  = "Test-Id"
   val customHeaderValue = "my-custom-value"
 
-  val httpApp: HttpApp[IO]          = TestHttpRoute.routes.orNotFound
-  val tracerApp: HttpApp[IO]        = Tracer(httpApp)
-  val customTracerApp: HttpApp[IO]  = Tracer(http = httpApp, headerName = customHeaderName)
+  // yolo
+  val tracer: Tracer[IO] = Tracer.create[IO]().unsafeRunSync
+  val customTracer: Tracer[IO] = Tracer.create[IO](customHeaderName).unsafeRunSync()
+
+  val tracerApp: HttpApp[IO]        = tracer.middleware(TestHttpRoute.routes(tracer).orNotFound)
+  val customTracerApp: HttpApp[IO]  = customTracer.middleware(TestHttpRoute.routes(customTracer).orNotFound)
 
   def defaultAssertion(traceHeaderName: String): Response[IO] => IO[Unit] = resp =>
     IO {
@@ -75,7 +78,7 @@ trait TracerFixture extends PropertyChecks {
 }
 
 object TestHttpRoute extends Http4sTracerDsl[IO] {
-  val routes: HttpRoutes[IO] = TracedHttpRoute[IO] {
+  def routes(implicit t: Tracer[IO]): HttpRoutes[IO] = TracedHttpRoute[IO] {
     case GET -> Root using traceId =>
       Ok(traceId.value)
   }

@@ -17,7 +17,8 @@
 package com.github.gvolpe.tracer.http
 
 import cats.effect.IO
-import com.github.gvolpe.tracer.KFX._
+import com.github.gvolpe.tracer.Trace._
+import com.github.gvolpe.tracer.Tracer
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.TestUserRepository
@@ -28,8 +29,10 @@ import org.scalatest.prop.TableFor3
 
 class UserRoutesSpec extends HttpRoutesSpec {
 
-  private val repo    = new TestUserRepository[KFX[IO, ?]]
-  private val program = new UserProgram[KFX[IO, ?]](repo)
+  implicit val tracer: Tracer[IO] = Tracer.create[IO]().unsafeRunSync // yolo
+
+  private val repo    = new TestUserRepository[Trace[IO, ?]]
+  private val program = new UserProgram[Trace[IO, ?]](repo)
   private val routes  = new UserRoutes[IO](program).routes
 
   val requests: TableFor3[String, IO[Request[IO]], Status] = Table(
