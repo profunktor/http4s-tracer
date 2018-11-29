@@ -116,7 +116,7 @@ lazy val microsite = project.in(file("site"))
   .settings(noPublish)
   .settings(
     micrositeName := "Http4s Tracer",
-    micrositeDescription := "End to end tracing system for Http4s",
+    micrositeDescription := "End-to-end tracing system for Http4s",
     micrositeAuthor := "Gabriel Volpe",
     micrositeGithubOwner := "gvolpe",
     micrositeGithubRepo := "http4s-tracer",
@@ -124,8 +124,7 @@ lazy val microsite = project.in(file("site"))
     micrositeExtraMdFiles := Map(
       file("README.md") -> ExtraMdFileConfig(
         "index.md",
-        "home",
-        Map("title" -> "Home", "position" -> "0")
+        "home"
       )
     ),
     micrositePalette := Map(

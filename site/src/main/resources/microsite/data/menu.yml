@@ -1,4 +1,12 @@
 options:
+  - title: Overview
+    url: overview.html
+    menu_section: overview
+
+  - title: Motivations
+    url: motivations.html
+    menu_section: motivations
+
   - title: Guide
     url: guide.html
     menu_section: guide
