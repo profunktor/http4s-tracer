@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.interpreter
+package com.github.gvolpe.tracer.tracer
 
-import cats.MonadError
-import com.github.gvolpe.tracer.KFX._
+import cats.effect.Sync
+import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
+import com.github.gvolpe.tracer.module.{Programs, Repositories}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 
-class UserTracerInterpreter[F[_]](repo: UserRepository[KFX[F, ?]])(implicit F: MonadError[F, Throwable],
-                                                                   L: TracerLog[KFX[F, ?]])
-    extends UserProgram[KFX[F, ?]](repo) {
+class TracedPrograms[F[_]: Sync](repos: Repositories[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]])
+    extends Programs[Trace[F, ?]] {
+  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](repos.users)
+}
 
-  override def find(username: Username): KFX[F, User] =
+class UserTracer[F[_]: Sync](
+    repo: UserRepository[Trace[F, ?]]
+)(implicit L: TracerLog[Trace[F, ?]])
+    extends UserProgram[Trace[F, ?]](repo) {
+
+  override def find(username: Username): Trace[F, User] =
     for {
       _ <- L.info[UserAlgebra[F]](s"Find user by username: ${username.value}")
       u <- super.find(username)
     } yield u
 
-  override def persist(user: User): KFX[F, Unit] =
+  override def persist(user: User): Trace[F, Unit] =
     for {
       _  <- L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}")
       rs <- super.persist(user)

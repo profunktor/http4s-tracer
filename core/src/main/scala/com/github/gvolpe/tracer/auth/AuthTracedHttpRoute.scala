@@ -27,11 +27,13 @@ import org.http4s.{AuthedRequest, AuthedService, Response}
 object AuthTracedHttpRoute {
   case class AuthTracedRequest[F[_], T](traceId: TraceId, request: AuthedRequest[F, T])
 
-  def apply[T, F[_]: Monad](pf: PartialFunction[AuthTracedRequest[F, T], F[Response[F]]]): AuthedService[T, F] =
+  def apply[T, F[_]: Monad: Tracer](
+      pf: PartialFunction[AuthTracedRequest[F, T], F[Response[F]]]
+  ): AuthedService[T, F] =
     Kleisli[OptionT[F, ?], AuthedRequest[F, T], Response[F]] { req =>
       OptionT {
-        Tracer
-          .getTraceId[F](req.req)
+        Tracer[F]
+          .getTraceId(req.req)
           .map(x => AuthTracedRequest[F, T](x.getOrElse(TraceId("-")), req))
           .flatMap { tr =>
             val rs: OptionT[F, Response[F]] = pf.andThen(OptionT.liftF(_)).applyOrElse(tr, Function.const(OptionT.none))

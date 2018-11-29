@@ -16,21 +16,37 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect.{ExitCode, IO, IOApp}
-import cats.syntax.functor._
+import cats.effect._
+import cats.syntax.all._
+import com.github.gvolpe.tracer.module._
+import com.github.gvolpe.tracer.instances.tracerlog._
+import com.github.gvolpe.tracer.tracer.{TracedPrograms, TracedRepositories}
 import org.http4s.server.blaze.BlazeServerBuilder
 
 object Server extends IOApp {
 
-  private val ctx = new Module[IO]
-
   override def run(args: List[String]): IO[ExitCode] =
-    BlazeServerBuilder[IO]
-      .bindHttp(8080, "0.0.0.0")
-      .withHttpApp(ctx.httpApp)
-      .serve
-      .compile
-      .drain
-      .as(ExitCode.Success)
+    new Main[IO].server.as(ExitCode.Success)
+
+}
+
+class Main[F[_]: ConcurrentEffect: Timer] {
+
+  val server: F[Unit] =
+    LiveRepositories[F].flatMap { repositories =>
+      val tracedRepos    = new TracedRepositories[F](repositories)
+      val tracedPrograms = new TracedPrograms[F](tracedRepos)
+
+      Tracer.create[F]("Flow-Id").flatMap { implicit tracer => // Header name is optional, default to "Trace-Id"
+        val httpApi = new HttpApi[F](tracedPrograms)
+
+        BlazeServerBuilder[F]
+          .bindHttp(8080, "0.0.0.0")
+          .withHttpApp(httpApi.httpApp)
+          .serve
+          .compile
+          .drain
+      }
+    }
 
 }

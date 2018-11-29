@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package com.github.gvolpe.tracer.module
 
-import cats.data.Kleisli
-import Tracer.TraceId
+import cats.effect.Sync
+import com.github.gvolpe.tracer.Trace.Trace
+import com.github.gvolpe.tracer.http.UserRoutes
+import com.github.gvolpe.tracer.{Tracer, TracerLog}
+import org.http4s.implicits._
+import org.http4s.{HttpApp, HttpRoutes}
 
-object KFX {
-  type KFX[F[_], A] = Kleisli[F, TraceId, A]
+class HttpApi[F[_]: Sync: Tracer](
+    programs: Programs[Trace[F, ?]]
+)(implicit L: TracerLog[Trace[F, ?]]) {
 
-  def apply[F[_], A](run: TraceId => F[A]): KFX[F, A] = Kleisli[F, TraceId, A](run)
+  private val httpRoutes: HttpRoutes[F] =
+    new UserRoutes[F](programs.users).routes
+
+  val httpApp: HttpApp[F] =
+    Tracer[F].middleware(httpRoutes.orNotFound)
+
 }

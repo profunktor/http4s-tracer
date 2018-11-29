@@ -26,11 +26,13 @@ import org.http4s.{HttpRoutes, Request, Response}
 object TracedHttpRoute {
   case class TracedRequest[F[_]](traceId: TraceId, request: Request[F])
 
-  def apply[F[_]: Monad](pf: PartialFunction[TracedRequest[F], F[Response[F]]]): HttpRoutes[F] =
+  def apply[F[_]: Monad: Tracer](
+      pf: PartialFunction[TracedRequest[F], F[Response[F]]]
+  ): HttpRoutes[F] =
     Kleisli[OptionT[F, ?], Request[F], Response[F]] { req =>
       OptionT {
-        Tracer
-          .getTraceId[F](req)
+        Tracer[F]
+          .getTraceId(req)
           .map(x => TracedRequest[F](x.getOrElse(TraceId("-")), req))
           .flatMap { tr =>
             val rs: OptionT[F, Response[F]] = pf.andThen(OptionT.liftF(_)).applyOrElse(tr, Function.const(OptionT.none))
@@ -39,4 +41,5 @@ object TracedHttpRoute {
       }
 
     }
+
 }
