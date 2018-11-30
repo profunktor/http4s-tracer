@@ -11,9 +11,10 @@ the different components in between such as external http calls, database access
 
 <ul>
   <li><code class="highlighter-rouge">Trace[F]</code> monad which is just an alias for <code class="highlighter-rouge">Kleisli[F, TraceId, ?]</code>.</li>
-  <li><code class="highlighter-rouge">Tracer[F]</code> http middleware.</li>
+  <li><code class="highlighter-rouge">Tracer[F]</code> typeclass that let’s you access the http middleware.</li>
   <li><code class="highlighter-rouge">Http4sTracerDsl[F]</code> as a replacement for <code class="highlighter-rouge">Http4sDsl[F]</code>.</li>
   <li><code class="highlighter-rouge">TracedHttpRoute[F]</code> as a replacement for <code class="highlighter-rouge">HttpRoutes.of[F]</code>.</li>
+  <li><code class="highlighter-rouge">TracerLog[F]</code> typeclass for structured logging with tracing information.</li>
 </ul>
 
 <p>With all this machinery in place, the system will trace the call-chain of every single request by either adding a <code class="highlighter-rouge">Trace-Id</code> header with a unique identifier or by passing around the one received. Note that the header name is customizable.</p>
@@ -28,6 +29,18 @@ the different components in between such as external http calls, database access
 </ul>
 
 <p>This separation of concerns is at the core of <code class="highlighter-rouge">http4s-tracer</code>’s design.</p>
+
+<h3 id="structured-logging">Structured logging</h3>
+
+<p>A normal application commonly serves hundreds of requests concurrently and being able to trace the call-graph of a single one could be invaluable in failure scenarios. Here’s an example of how the logs look like when using the default <code class="highlighter-rouge">TracerLog</code> instance:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>10:50:16.587 <span class="o">[</span>ec-1] INFO  c.g.g.t.Tracer - <span class="o">[</span>Trace-Id] -[490bd050-f442-11e8-a46d-578226236d02] - Request<span class="o">(</span><span class="nv">method</span><span class="o">=</span>POST, <span class="nv">uri</span><span class="o">=</span>/users, ...<span class="o">)</span>
+10:50:16.768 <span class="o">[</span>ec-1] INFO  c.g.g.t.a.UserAlgebra - <span class="o">[</span>Trace-Id] - <span class="o">[</span>490bd050-f442-11e8-a46d-578226236d02] - About to persist user: gvolpe
+10:50:16.769 <span class="o">[</span>ec-1] INFO  c.g.g.t.r.a<span class="nv">$UserRepository</span> - <span class="o">[</span>Trace-Id] - <span class="o">[</span>490bd050-f442-11e8-a46d-578226236d02] - Find user by username: gvolpe
+10:50:16.770 <span class="o">[</span>ec-1] INFO  c.g.g.t.r.a<span class="nv">$UserRepository</span> - <span class="o">[</span>Trace-Id] - <span class="o">[</span>490bd050-f442-11e8-a46d-578226236d02] - Persisting user: gvolpe
+10:50:16.773 <span class="o">[</span>ec-1] INFO  c.g.g.t.Tracer - <span class="o">[</span>Trace-Id] - <span class="o">[</span>490bd050-f442-11e8-a46d-578226236d02] - Response<span class="o">(</span><span class="nv">status</span><span class="o">=</span>201, ...<span class="o">)</span>
+</code></pre></div></div>
+
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/http4s-tracer/highlight/highlight.pack.js"></script><script>hljs.configure({languages:['scala','java','bash']});
 hljs.initHighlighting();
               </script><script src="/http4s-tracer/js/toc.js"></script><script>((window.gitter = {}).chat = {}).options = {

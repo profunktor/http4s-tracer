@@ -147,7 +147,7 @@
 
 <ul>
   <li>We require an <code class="highlighter-rouge">UserAlgebra[Trace[F, ?]]</code> instead of a plain <code class="highlighter-rouge">UserAlgebra[F]</code>.</li>
-  <li>We need an instance of <code class="highlighter-rouge">Trace[F]</code> in scope.</li>
+  <li>We need an instance of <code class="highlighter-rouge">Tracer[F]</code> in scope to make sure we are getting the right header.</li>
 </ul>
 
 <p>This is necessary to pass the “Trace-Id” along and we’ll soon see how to do it.</p>
@@ -274,28 +274,27 @@ interpreter that adds tracing capabilities on top of the original program, highl
 
 <h4 id="main-entry-point">Main entry point</h4>
 
-<p>This is where we instantiate our modules and create our <code class="highlighter-rouge">Tracer</code> instance to make it available implicitly.</p>
+<p>This is where we instantiate our modules and create our <code class="highlighter-rouge">Tracer</code> instance. For a default instance with header name “Trace-Id” just use <code class="highlighter-rouge">import com.github.gvolpe.tracer.instances.tracer._</code>.</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.github.gvolpe.tracer.instances.tracerlog._</span>
 <span class="k">import</span> <span class="nn">org.http4s.server.blaze.BlazeServerBuilder</span>
 
 <span class="k">class</span> <span class="nc">Main</span><span class="o">[</span><span class="kt">F</span><span class="o">[</span><span class="k">_</span><span class="o">]</span><span class="kt">:</span> <span class="kt">ConcurrentEffect:</span> <span class="kt">Timer</span><span class="o">]</span> <span class="o">{</span>
 
+  <span class="k">implicit</span> <span class="k">val</span> <span class="n">tracer</span><span class="k">:</span> <span class="kt">Tracer</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Tracer</span><span class="o">.</span><span class="n">create</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="s">"Flow-Id"</span><span class="o">)</span>
+
   <span class="k">val</span> <span class="n">server</span><span class="k">:</span> <span class="kt">F</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span>
     <span class="nc">LiveRepositories</span><span class="o">[</span><span class="kt">F</span><span class="o">].</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">repositories</span> <span class="k">=&gt;</span>
       <span class="k">val</span> <span class="n">tracedRepos</span>    <span class="k">=</span> <span class="k">new</span> <span class="nc">TracedRepositories</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="n">repositories</span><span class="o">)</span>
       <span class="k">val</span> <span class="n">tracedPrograms</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">TracedPrograms</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="n">tracedRepos</span><span class="o">)</span>
+      <span class="k">val</span> <span class="n">httpApi</span>        <span class="k">=</span> <span class="k">new</span> <span class="nc">HttpApi</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="n">tracedPrograms</span><span class="o">)</span>
 
-      <span class="nc">Tracer</span><span class="o">.</span><span class="n">create</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="s">"Flow-Id"</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">tracer</span> <span class="k">=&gt;</span> <span class="c1">// Header name is optional, default to "Trace-Id"
-</span>        <span class="k">val</span> <span class="n">httpApi</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">HttpApi</span><span class="o">[</span><span class="kt">F</span><span class="o">](</span><span class="n">tracedPrograms</span><span class="o">)</span>
-
-        <span class="nc">BlazeServerBuilder</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span>
-          <span class="o">.</span><span class="n">bindHttp</span><span class="o">(</span><span class="mi">8080</span><span class="o">,</span> <span class="s">"0.0.0.0"</span><span class="o">)</span>
-          <span class="o">.</span><span class="n">withHttpApp</span><span class="o">(</span><span class="n">httpApi</span><span class="o">.</span><span class="n">httpApp</span><span class="o">)</span>
-          <span class="o">.</span><span class="n">serve</span>
-          <span class="o">.</span><span class="n">compile</span>
-          <span class="o">.</span><span class="n">drain</span>
-      <span class="o">}</span>
+      <span class="nc">BlazeServerBuilder</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span>
+        <span class="o">.</span><span class="n">bindHttp</span><span class="o">(</span><span class="mi">8080</span><span class="o">,</span> <span class="s">"0.0.0.0"</span><span class="o">)</span>
+        <span class="o">.</span><span class="n">withHttpApp</span><span class="o">(</span><span class="n">httpApi</span><span class="o">.</span><span class="n">httpApp</span><span class="o">)</span>
+        <span class="o">.</span><span class="n">serve</span>
+        <span class="o">.</span><span class="n">compile</span>
+        <span class="o">.</span><span class="n">drain</span>
     <span class="o">}</span>
 
 <span class="o">}</span>
