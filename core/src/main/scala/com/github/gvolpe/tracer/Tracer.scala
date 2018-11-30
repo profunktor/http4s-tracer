@@ -16,9 +16,9 @@
 
 package com.github.gvolpe.tracer
 
+import cats.Applicative
 import cats.data.Kleisli
 import cats.effect.Sync
-import cats.effect.concurrent.Ref
 import cats.syntax.all._
 import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
@@ -50,35 +50,33 @@ object Tracer extends StringSyntax {
 
   def apply[F[_]](implicit ev: Tracer[F]): Tracer[F] = ev
 
-  def create[F[_]: Sync](headerName: String = DefaultTraceIdHeader): F[Tracer[F]] =
-    Ref.of[F, String](headerName).map(ref => new Tracer[F](ref))
+  def create[F[_]](headerName: String = DefaultTraceIdHeader): Tracer[F] = new Tracer[F](headerName)
 
 }
 
-class Tracer[F[_]: Sync] private (ref: Ref[F, String]) {
+class Tracer[F[_]] private (headerName: String) {
 
   import Trace._, Tracer._
 
   // format: off
-  def middleware(http: HttpApp[F])(implicit L: TracerLog[Trace[F, ?]]): HttpApp[F] =
+  def middleware(http: HttpApp[F])(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
-          id <- Sync[F].delay(TraceId(TimeUuid().toString))
-          tr <- ref.get.map(h => req.putHeaders(Header(h, id.value)))
+          id <- F.delay(TraceId(TimeUuid().toString))
+          tr <- F.delay(req.putHeaders(Header(headerName, id.value)))
         } yield (tr, id)
 
       for {
         mi       <- getTraceId(req)
         (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
         _        <- L.info[Tracer[F]](s"$req").run(id)
-        header   <- ref.get
-        rs       <- http(tr).map(_.putHeaders(Header(header, id.value)))
+        rs       <- http(tr).map(_.putHeaders(Header(headerName, id.value)))
         _        <- L.info[Tracer[F]](s"$rs").run(id)
       } yield rs
     }
 
-  def getTraceId(request: Request[F]): F[Option[TraceId]] =
-    ref.get.map(hn => request.headers.get(hn.ci).map(h => TraceId(h.value)))
+  def getTraceId(request: Request[F])(implicit F: Applicative[F]): F[Option[TraceId]] =
+    F.pure(request.headers.get(headerName.ci).map(h => TraceId(h.value)))
 
 }
