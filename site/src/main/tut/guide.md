@@ -159,7 +159,7 @@ class UserRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Ht
 There are a couple of things going on here:
 
 - We require an `UserAlgebra[Trace[F, ?]]` instead of a plain `UserAlgebra[F]`.
-- We need an instance of `Trace[F]` in scope.
+- We need an instance of `Tracer[F]` in scope to make sure we are getting the right header.
 
 This is necessary to pass the "Trace-Id" along and we'll soon see how to do it.
 
@@ -290,7 +290,7 @@ Writing these tracers is the most tedious part as we need to write quite some bo
 
 #### Main entry point
 
-This is where we instantiate our modules and create our `Tracer` instance to make it available implicitly.
+This is where we instantiate our modules and create our `Tracer` instance. For a default instance with header name "Trace-Id" just use `import com.github.gvolpe.tracer.instances.tracer._`.
 
 ```tut:book:silent
 import com.github.gvolpe.tracer.instances.tracerlog._
@@ -298,21 +298,20 @@ import org.http4s.server.blaze.BlazeServerBuilder
 
 class Main[F[_]: ConcurrentEffect: Timer] {
 
+  implicit val tracer: Tracer[F] = Tracer.create[F]("Flow-Id")
+
   val server: F[Unit] =
     LiveRepositories[F].flatMap { repositories =>
       val tracedRepos    = new TracedRepositories[F](repositories)
       val tracedPrograms = new TracedPrograms[F](tracedRepos)
+      val httpApi        = new HttpApi[F](tracedPrograms)
 
-      Tracer.create[F]("Flow-Id").flatMap { implicit tracer => // Header name is optional, default to "Trace-Id"
-        val httpApi = new HttpApi[F](tracedPrograms)
-
-        BlazeServerBuilder[F]
-          .bindHttp(8080, "0.0.0.0")
-          .withHttpApp(httpApi.httpApp)
-          .serve
-          .compile
-          .drain
-      }
+      BlazeServerBuilder[F]
+        .bindHttp(8080, "0.0.0.0")
+        .withHttpApp(httpApi.httpApp)
+        .serve
+        .compile
+        .drain
     }
 
 }
