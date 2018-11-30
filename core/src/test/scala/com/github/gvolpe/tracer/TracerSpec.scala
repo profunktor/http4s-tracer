@@ -47,9 +47,8 @@ trait TracerFixture extends PropertyChecks {
   val customHeaderName  = "Test-Id"
   val customHeaderValue = "my-custom-value"
 
-  // yolo
-  val tracer: Tracer[IO] = Tracer.create[IO]().unsafeRunSync
-  val customTracer: Tracer[IO] = Tracer.create[IO](customHeaderName).unsafeRunSync()
+  val tracer: Tracer[IO] = Tracer.create[IO]()
+  val customTracer: Tracer[IO] = Tracer.create[IO](customHeaderName)
 
   val tracerApp: HttpApp[IO]        = tracer.middleware(TestHttpRoute.routes(tracer).orNotFound)
   val customTracerApp: HttpApp[IO]  = customTracer.middleware(TestHttpRoute.routes(customTracer).orNotFound)
