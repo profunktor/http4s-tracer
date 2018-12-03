@@ -10,7 +10,7 @@ object Dependencies {
     val gfcTimeuuid = "0.0.8"
 
     // Test
-    val scalaTest   = "3.0.4"
+    val scalaTest   = "3.0.5"
     val scalaCheck  = "1.13.5"
 
     // Compiler
