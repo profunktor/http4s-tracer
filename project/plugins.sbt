@@ -13,6 +13,8 @@ addSbtPlugin("de.heikoseeberger" % "sbt-header" % "4.1.0")
 
 addSbtPlugin("com.lucidchart" %  "sbt-scalafmt" % "1.15")
 
+addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.10")
+
 addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.23")
 
 addSbtPlugin("com.scalapenos" % "sbt-prompt" % "1.0.2")
