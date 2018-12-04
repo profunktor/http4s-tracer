@@ -4,17 +4,17 @@ object Dependencies {
 
   object Versions {
     val catsEffect  = "1.1.0"
-    val fs2         = "1.0.0"
+    val fs2         = "1.0.1"
     val http4s      = "0.20.0-M3"
     val circe       = "0.10.0"
     val gfcTimeuuid = "0.0.8"
 
     // Test
-    val scalaTest   = "3.0.4"
+    val scalaTest   = "3.0.5"
     val scalaCheck  = "1.13.5"
 
     // Compiler
-    val kindProjector     = "0.9.8"
+    val kindProjector     = "0.9.9"
     val betterMonadicFor  = "0.2.4"
 
     // Runtime
