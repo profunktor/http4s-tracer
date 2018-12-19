@@ -23,7 +23,6 @@ import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.model.errors.UserError._
 import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
-import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.server.Router
 
