@@ -22,7 +22,6 @@ import com.github.gvolpe.tracer.instances.tracer._
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
 import com.github.gvolpe.tracer.repository.TestUserRepository
-import io.circe.generic.auto._
 import org.http4s.Method._
 import org.http4s.{Request, Status, Uri}
 import org.scalatest.prop.TableFor3
