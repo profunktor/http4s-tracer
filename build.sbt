@@ -83,6 +83,7 @@ lazy val examplesDependencies = Seq(
   Libraries.circeCore,
   Libraries.circeGeneric,
   Libraries.circeGenericX,
+  Libraries.log4CatsSlf4j,
   Libraries.logback % Runtime,
 )
 
@@ -102,13 +103,19 @@ lazy val `http4s-tracer` = project.in(file("core"))
   .settings(libraryDependencies += Libraries.http4sClient % Test)
   .enablePlugins(AutomateHeaderPlugin)
 
+lazy val `http4s-tracer-log4cats` = project.in(file("log4cats"))
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies += Libraries.log4CatsCore)
+  .enablePlugins(AutomateHeaderPlugin)
+  .dependsOn(`http4s-tracer`)
+
 lazy val examples = project.in(file("examples"))
   .settings(commonSettings: _*)
   .settings(scalacOptions -= "-Ywarn-dead-code")
   .settings(libraryDependencies ++= examplesDependencies)
   .settings(noPublish)
   .enablePlugins(AutomateHeaderPlugin)
-  .dependsOn(`http4s-tracer`)
+  .dependsOn(`http4s-tracer`, `http4s-tracer-log4cats`)
 
 lazy val microsite = project.in(file("site"))
   .enablePlugins(MicrositesPlugin)

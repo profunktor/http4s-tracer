@@ -317,7 +317,11 @@ class Main[F[_]: ConcurrentEffect: Timer] {
 }
 ```
 
+#### Logger
+
 Note that we can get a default instance of `TracerLog` if our effect type has an instance of `Sync` by a single import.
+
+If you are a [log4cats](https://christopherdavenport.github.io/log4cats/) user we can derive a `TracerLog` instance if you provide a `Logger` instance. All you have to do is to import `com.github.gvolpe.tracer.log4cats._` and add the extra dependency `http4s-tracer-log4cats`. See the [Log4CatsServer](https://github.com/gvolpe/http4s-tracer/blob/master/examples/src/main/scala/com/github/gvolpe/tracer/Log4CatsServer.scala) example for more.
 
 #### Choose your effect type!
 

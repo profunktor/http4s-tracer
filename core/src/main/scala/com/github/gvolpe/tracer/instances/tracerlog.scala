@@ -32,16 +32,25 @@ object tracerlog {
       def logger[A](implicit ct: ClassTag[A]): F[Logger] =
         F.delay(LoggerFactory.getLogger(ct.runtimeClass))
 
-      override def info[A: ClassTag](value: String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap(log => F.delay(log.info(s"$id - $value")))
+      override def info[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        logger[A].flatMap { log =>
+          if (log.isInfoEnabled) F.delay(log.info(s"$id - $value"))
+          else F.unit
+        }
       }
 
-      override def error[A: ClassTag](value: String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap(log => F.delay(log.error(s"$id - $value")))
+      override def error[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        logger[A].flatMap { log =>
+          if (log.isErrorEnabled) F.delay(log.error(s"$id - $value"))
+          else F.unit
+        }
       }
 
-      override def warn[A: ClassTag](value: String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap(log => F.delay(log.warn(s"$id - $value")))
+      override def warn[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        logger[A].flatMap { log =>
+          if (log.isWarnEnabled) F.delay(log.warn(s"$id - $value"))
+          else F.unit
+        }
       }
     }
 
