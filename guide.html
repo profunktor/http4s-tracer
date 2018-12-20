@@ -300,7 +300,11 @@ interpreter that adds tracing capabilities on top of the original program, highl
 <span class="o">}</span>
 </code></pre></div></div>
 
+<h4 id="logger">Logger</h4>
+
 <p>Note that we can get a default instance of <code class="highlighter-rouge">TracerLog</code> if our effect type has an instance of <code class="highlighter-rouge">Sync</code> by a single import.</p>
+
+<p>If you are a <a href="https://christopherdavenport.github.io/log4cats/">log4cats</a> user we can derive a <code class="highlighter-rouge">TracerLog</code> instance if you provide a <code class="highlighter-rouge">Logger</code> instance. All you have to do is to import <code class="highlighter-rouge">com.github.gvolpe.tracer.log4cats._</code> and add the extra dependency <code class="highlighter-rouge">http4s-tracer-log4cats</code>. See the <a href="https://github.com/gvolpe/http4s-tracer/blob/master/examples/src/main/scala/com/github/gvolpe/tracer/Log4CatsServer.scala">Log4CatsServer</a> example for more.</p>
 
 <h4 id="choose-your-effect-type">Choose your effect type!</h4>
 
