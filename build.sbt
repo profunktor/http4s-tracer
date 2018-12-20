@@ -88,7 +88,7 @@ lazy val examplesDependencies = Seq(
 )
 
 lazy val root = project.in(file("."))
-  .aggregate(`http4s-tracer`, examples, microsite)
+  .aggregate(`http4s-tracer`, `http4s-tracer-log4cats`, examples, microsite)
   .settings(noPublish)
 
 lazy val noPublish = Seq(
