@@ -16,10 +16,24 @@
 
 package com.github.gvolpe.tracer
 
+import com.github.gvolpe.tracer.Trace._
+import io.chrisdavenport.log4cats.Logger
+
 import scala.reflect.ClassTag
 
-trait TracerLog[F[_]] {
-  def info[A: ClassTag](value: => String): F[Unit]
-  def error[A: ClassTag](value: => String): F[Unit]
-  def warn[A: ClassTag](value: => String): F[Unit]
+object log4cats {
+
+  implicit def log4CatsInstance[F[_]](implicit L: Logger[F]): TracerLog[Trace[F, ?]] =
+    new TracerLog[Trace[F, ?]] {
+      override def info[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        L.info(s"$id - $value")
+      }
+      override def error[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        L.error(s"$id - $value")
+      }
+      override def warn[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
+        L.warn(s"$id - $value")
+      }
+    }
+
 }

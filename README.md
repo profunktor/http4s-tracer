@@ -15,5 +15,11 @@ Add this to your `build.sbt`:
 libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
 ```
 
+If you would like to have [log4cats](https://christopherdavenport.github.io/log4cats/) support add this extra dependency:
+
+```
+libraryDependencies += "com.github.gvolpe" %% "http4s-tracer-log4cats" % Version
+```
+
 Find out more in the [microsite](https://gvolpe.github.io/http4s-tracer/).
 
