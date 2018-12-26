@@ -31,6 +31,6 @@ class HttpApi[F[_]: Sync: Tracer](
     new UserRoutes[F](programs.users).routes
 
   val httpApp: HttpApp[F] =
-    Tracer[F].middleware(httpRoutes.orNotFound)
+    Tracer[F].loggingMiddleware(httpRoutes.orNotFound)
 
 }
