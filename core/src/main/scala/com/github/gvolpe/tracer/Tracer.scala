@@ -58,8 +58,11 @@ class Tracer[F[_]] private (headerName: String) {
 
   import Trace._, Tracer._
 
-  // format: off
-  def middleware(http: HttpApp[F])(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
+  def middleware(
+      http: HttpApp[F],
+      logRequest: Boolean = false,
+      logResponse: Boolean = false
+  )(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
@@ -69,12 +72,17 @@ class Tracer[F[_]] private (headerName: String) {
 
       for {
         mi       <- getTraceId(req)
-        (tr, id) <- mi.fold(createId){ id => (req, id).pure[F] }
-        _        <- L.info[Tracer[F]](s"$req").run(id)
+        (tr, id) <- mi.fold(createId)(id => (req, id).pure[F])
+        _        <- if (logRequest) L.info[Tracer[F]](s"$req").run(id) else F.unit
         rs       <- http(tr).map(_.putHeaders(Header(headerName, id.value)))
-        _        <- L.info[Tracer[F]](s"$rs").run(id)
+        _        <- if (logResponse) L.info[Tracer[F]](s"$rs").run(id) else F.unit
       } yield rs
     }
+
+  def loggingMiddleware(
+      http: HttpApp[F]
+  )(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
+    middleware(http, logRequest = true, logResponse = true)
 
   def getTraceId(request: Request[F])(implicit F: Applicative[F]): F[Option[TraceId]] =
     F.pure(request.headers.get(headerName.ci).map(h => TraceId(h.value)))

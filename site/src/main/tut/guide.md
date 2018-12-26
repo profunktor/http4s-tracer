@@ -198,7 +198,26 @@ object LiveRepositories {
 
 #### HttpApi module
 
-Finally, here we define our `HttpRoutes` and middlewares (including tracing).
+Before we look into the `HttpApi` module let's look into the `middleware` signature:
+
+```scala
+def middleware(
+  http: HttpApp[F],
+  logRequest: Boolean = false,
+  logResponse: Boolean = false
+)(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] = ???
+```
+
+You can change the default values of the boolean flags if you want to have the request and/or response logged. If you want both activated there's a another constructor provided by the library:
+
+```scala
+def loggingMiddleware(
+    http: HttpApp[F]
+)(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
+  middleware(http, logRequest = true, logResponse = true)
+```
+
+Finally, here we define our `HttpRoutes` and tracing middleware.
 
 ```tut:book:silent
 import com.github.gvolpe.tracer.Trace.Trace
@@ -338,7 +357,7 @@ object Server extends IOApp {
 
 ### Running the application
 
-This is how the activity log might look like for a simple POST request:
+This is how the activity log might look like for a simple POST request (logging activated):
 
 ```bash
 4:13:48.985 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer$ - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 30))
