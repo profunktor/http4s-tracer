@@ -185,7 +185,24 @@
 
 <h4 id="httpapi-module">HttpApi module</h4>
 
-<p>Finally, here we define our <code class="highlighter-rouge">HttpRoutes</code> and middlewares (including tracing).</p>
+<p>Before we look into the <code class="highlighter-rouge">HttpApi</code> module let’s look into the <code class="highlighter-rouge">middleware</code> signature:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">middleware</span><span class="o">(</span>
+  <span class="n">http</span><span class="k">:</span> <span class="kt">HttpApp</span><span class="o">[</span><span class="kt">F</span><span class="o">],</span>
+  <span class="n">logRequest</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span>
+  <span class="n">logResponse</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="o">)(</span><span class="k">implicit</span> <span class="n">F</span><span class="k">:</span> <span class="kt">Sync</span><span class="o">[</span><span class="kt">F</span><span class="o">],</span> <span class="n">L</span><span class="k">:</span> <span class="kt">TracerLog</span><span class="o">[</span><span class="kt">Trace</span><span class="o">[</span><span class="kt">F</span>, <span class="kt">?</span><span class="o">]])</span><span class="k">:</span> <span class="kt">HttpApp</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span> <span class="k">=</span> <span class="o">???</span>
+</code></pre></div></div>
+
+<p>You can change the default values of the boolean flags if you want to have the request and/or response logged. If you want both activated there’s a another constructor provided by the library:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="n">loggingMiddleware</span><span class="o">(</span>
+    <span class="n">http</span><span class="k">:</span> <span class="kt">HttpApp</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span>
+<span class="o">)(</span><span class="k">implicit</span> <span class="n">F</span><span class="k">:</span> <span class="kt">Sync</span><span class="o">[</span><span class="kt">F</span><span class="o">],</span> <span class="n">L</span><span class="k">:</span> <span class="kt">TracerLog</span><span class="o">[</span><span class="kt">Trace</span><span class="o">[</span><span class="kt">F</span>, <span class="kt">?</span><span class="o">]])</span><span class="k">:</span> <span class="kt">HttpApp</span><span class="o">[</span><span class="kt">F</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">middleware</span><span class="o">(</span><span class="n">http</span><span class="o">,</span> <span class="n">logRequest</span> <span class="k">=</span> <span class="kc">true</span><span class="o">,</span> <span class="n">logResponse</span> <span class="k">=</span> <span class="kc">true</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Finally, here we define our <code class="highlighter-rouge">HttpRoutes</code> and tracing middleware.</p>
 
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.github.gvolpe.tracer.Trace.Trace</span>
 <span class="k">import</span> <span class="nn">com.github.gvolpe.tracer.</span><span class="o">{</span><span class="nc">Tracer</span><span class="o">,</span> <span class="nc">TracerLog</span><span class="o">}</span>
@@ -320,7 +337,7 @@ interpreter that adds tracing capabilities on top of the original program, highl
 
 <h3 id="running-the-application">Running the application</h3>
 
-<p>This is how the activity log might look like for a simple POST request:</p>
+<p>This is how the activity log might look like for a simple POST request (logging activated):</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>4:13:48.985 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer<span class="nv">$ </span>- <span class="o">[</span>TraceId] - <span class="o">[</span>02594e59-4b21-4d0a-aad5-5866a632fbb5] - Request<span class="o">(</span><span class="nv">method</span><span class="o">=</span>POST, <span class="nv">uri</span><span class="o">=</span>/users, <span class="nv">headers</span><span class="o">=</span>Headers<span class="o">(</span>HOST: localhost:8080, content-type: application/json, content-length: 30<span class="o">))</span>
 14:13:49.282 <span class="o">[</span>scala-execution-context-global-17] INFO com.github.gvolpe.tracer.algebra<span class="nv">$UserAlgebra</span> - <span class="o">[</span>TraceId] - <span class="o">[</span>02594e59-4b21-4d0a-aad5-5866a632fbb5] - About to persist user: modersky
