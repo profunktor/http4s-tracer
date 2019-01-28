@@ -19,7 +19,7 @@ object Dependencies {
     val betterMonadicFor = "0.2.4"
 
     // Runtime
-    val logback = "1.2.1"
+    val logback = "1.2.3"
   }
 
   object Libraries {
