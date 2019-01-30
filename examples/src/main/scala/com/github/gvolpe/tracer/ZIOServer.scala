@@ -16,16 +16,18 @@
 
 package com.github.gvolpe.tracer
 
-import cats.effect._
-import cats.syntax.functor._
+import com.github.gvolpe.tracer.instances.tracer._
 import com.github.gvolpe.tracer.instances.tracerlog._
+import scalaz.zio.{App, Clock, IO}
+import scalaz.zio.interop.Task
+import scalaz.zio.interop.catz._
 
-object Server extends IOApp {
+object ZIOServer extends App {
 
-  // For a default instance with header name "Trace-Id" just use `import com.github.gvolpe.tracer.instances.tracer._`
-  implicit val tracer = Tracer.create[IO]("Flow-Id")
+  implicit val clock = Clock.Live
+  implicit val timer = ioTimer[Throwable]
 
-  override def run(args: List[String]): IO[ExitCode] =
-    new Main[IO].server.as(ExitCode.Success)
+  override def run(args: List[String]): IO[Nothing, ExitStatus] =
+    new Main[Task].server.run.map(_ => ExitStatus.ExitNow(0))
 
 }

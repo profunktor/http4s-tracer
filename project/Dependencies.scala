@@ -9,6 +9,7 @@ object Dependencies {
     val circe       = "0.11.1"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "0.2.0"
+    val zio         = "0.6.0"
 
     // Test
     val scalaTest  = "3.0.5"
@@ -26,6 +27,7 @@ object Dependencies {
     def circe(artifact: String): ModuleID    = "io.circe"          %% s"circe-$artifact"    % Versions.circe
     def http4s(artifact: String): ModuleID   = "org.http4s"        %% s"http4s-$artifact"   % Versions.http4s
     def log4cats(artifact: String): ModuleID = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
+    def zio(artifact: String): ModuleID      = "org.scalaz"        %% artifact              % Versions.zio
 
     lazy val catsEffect = "org.typelevel" %% "cats-effect" % Versions.catsEffect
     lazy val fs2Core    = "co.fs2"        %% "fs2-core"    % Versions.fs2
@@ -38,6 +40,9 @@ object Dependencies {
     lazy val circeCore     = circe("core")
     lazy val circeGeneric  = circe("generic")
     lazy val circeGenericX = circe("generic-extras")
+
+    lazy val zioCore = zio("scalaz-zio")
+    lazy val zioCats = zio("scalaz-zio-interop-cats")
 
     lazy val gfcTimeuuid = "com.gilt" %% "gfc-timeuuid" % Versions.gfcTimeuuid
 

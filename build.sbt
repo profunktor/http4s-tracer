@@ -7,7 +7,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "com.github.gvolpe"
 
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.7")
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.8")
 
 sonatypeProfileName := "com.github.gvolpe"
 
@@ -83,6 +83,8 @@ lazy val examplesDependencies = Seq(
   Libraries.circeCore,
   Libraries.circeGeneric,
   Libraries.circeGenericX,
+  Libraries.zioCore,
+  Libraries.zioCats,
   Libraries.log4CatsSlf4j,
   Libraries.logback % Runtime,
 )
