@@ -25,7 +25,6 @@ import scalaz.zio.interop.catz._
 object ZIOServer extends App {
 
   implicit val clock = Clock.Live
-  implicit val timer = ioTimer[Throwable]
 
   override def run(args: List[String]): IO[Nothing, ExitStatus] =
     new Main[Task].server.run.map(_ => ExitStatus.ExitNow(0))
