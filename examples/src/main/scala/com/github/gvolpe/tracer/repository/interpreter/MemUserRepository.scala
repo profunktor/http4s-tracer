@@ -31,10 +31,10 @@ class MemUserRepository[F[_]: Sync] private (
     state: Ref[F, Map[Username, User]]
 ) extends UserRepository[F] {
 
-  override def find(username: Username): F[Option[User]] =
+  def find(username: Username): F[Option[User]] =
     state.get.map(_.get(username))
 
-  override def persist(user: User): F[Unit] =
+  def persist(user: User): F[Unit] =
     state.update(_.updated(user.username, user))
 
 }

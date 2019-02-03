@@ -17,17 +17,13 @@
 package com.github.gvolpe.tracer.module
 
 import cats.effect.Sync
-import cats.temp.par._
-import com.github.gvolpe.tracer.algebra.UserAlgebra
-import com.github.gvolpe.tracer.program.UserProgram
+import com.github.gvolpe.tracer.http.client.{LiveUserRegistry, UserRegistry}
+import org.http4s.client.Client
 
-private[module] trait Programs[F[_]] {
-  def users: UserAlgebra[F]
+private[module] trait HttpClients[F[_]] {
+  def userRegistry: UserRegistry[F]
 }
 
-final case class LivePrograms[F[_]: Par: Sync](
-    repos: Repositories[F],
-    clients: HttpClients[F]
-) extends Programs[F] {
-  def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
+final case class LiveHttpClients[F[_]: Sync](client: Client[F]) extends HttpClients[F] {
+  def userRegistry: UserRegistry[F] = LiveUserRegistry[F](client)
 }

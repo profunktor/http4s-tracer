@@ -3,6 +3,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
+    val catsPar     = "0.2.0"
     val catsEffect  = "1.2.0"
     val fs2         = "1.0.3"
     val http4s      = "0.20.0-M5"
@@ -29,8 +30,9 @@ object Dependencies {
     def log4cats(artifact: String): ModuleID = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
     def zio(artifact: String): ModuleID      = "org.scalaz"        %% artifact              % Versions.zio
 
-    lazy val catsEffect = "org.typelevel" %% "cats-effect" % Versions.catsEffect
-    lazy val fs2Core    = "co.fs2"        %% "fs2-core"    % Versions.fs2
+    lazy val catsPar    = "io.chrisdavenport" %% "cats-par"    % Versions.catsPar
+    lazy val catsEffect = "org.typelevel"     %% "cats-effect" % Versions.catsEffect
+    lazy val fs2Core    = "co.fs2"            %% "fs2-core"    % Versions.fs2
 
     lazy val http4sServer = http4s("blaze-server")
     lazy val http4sClient = http4s("blaze-client")

@@ -79,6 +79,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val examplesDependencies = Seq(
+  Libraries.catsPar,
   Libraries.http4sClient,
   Libraries.http4sCirce,
   Libraries.circeCore,

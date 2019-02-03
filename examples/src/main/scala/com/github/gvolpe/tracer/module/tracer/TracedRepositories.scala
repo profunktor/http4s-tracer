@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.tracer
+package com.github.gvolpe.tracer.module.tracer
 
 import cats.FlatMap
 import com.github.gvolpe.tracer.Trace.Trace
@@ -23,12 +23,16 @@ import com.github.gvolpe.tracer.module.Repositories
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 import com.github.gvolpe.tracer.{Trace, TracerLog}
 
-class TracedRepositories[F[_]: FlatMap](repos: Repositories[F])(implicit L: TracerLog[Trace[F, ?]])
+case class TracedRepositories[F[_]: FlatMap](
+    repos: Repositories[F]
+)(implicit L: TracerLog[Trace[F, ?]])
     extends Repositories[Trace[F, ?]] {
   val users: UserRepository[Trace[F, ?]] = new UserTracerRepository[F](repos.users)
 }
 
-class UserTracerRepository[F[_]: FlatMap](repo: UserRepository[F])(implicit L: TracerLog[Trace[F, ?]])
+private[tracer] final class UserTracerRepository[F[_]: FlatMap](
+    repo: UserRepository[F]
+)(implicit L: TracerLog[Trace[F, ?]])
     extends UserRepository[Trace[F, ?]] {
 
   override def find(username: Username): Trace[F, Option[User]] =
