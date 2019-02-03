@@ -27,7 +27,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 
 import scala.concurrent.ExecutionContext
 
-class Main[F[_]: ConcurrentEffect: Par: Timer: Tracer](implicit L: TracerLog[Trace[F, ?]]) {
+class Main[F[_]: ConcurrentEffect: Par: Timer: Tracer: λ[T[_] => TracerLog[Trace[T, ?]]]] {
 
   val server: F[Unit] =
     BlazeClientBuilder[F](ExecutionContext.global).resource.use { client =>
