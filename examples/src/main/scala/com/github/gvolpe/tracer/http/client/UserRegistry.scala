@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module
+package com.github.gvolpe.tracer.http
+package client
 
 import cats.effect.Sync
 import cats.syntax.functor._
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
-import com.github.gvolpe.tracer.repository.interpreter.MemUserRepository
+import com.github.gvolpe.tracer.model.user.User
+import io.circe.syntax._
+import org.http4s.Method._
+import org.http4s.Uri
+import org.http4s.client.Client
+import org.http4s.client.dsl.Http4sClientDsl
 
-private[module] trait Repositories[F[_]] {
-  def users: UserRepository[F]
+trait UserRegistry[F[_]] {
+  def register(user: User): F[Unit]
 }
 
-object LiveRepositories {
-  def apply[F[_]: Sync]: F[Repositories[F]] =
-    MemUserRepository.create[F].map(new LiveRepositories[F](_))
-}
+final case class LiveUserRegistry[F[_]: Sync](
+    client: Client[F]
+) extends UserRegistry[F]
+    with Http4sClientDsl[F] {
 
-final class LiveRepositories[F[_]](usersRepo: UserRepository[F]) extends Repositories[F] {
-  val users: UserRepository[F] = usersRepo
+  private val uri = Uri.uri("https://jsonplaceholder.typicode.com/posts")
+
+  def register(user: User): F[Unit] =
+    client.successful(POST(user.asJson, uri)).void
 }

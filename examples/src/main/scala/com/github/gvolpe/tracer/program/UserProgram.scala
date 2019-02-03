@@ -18,23 +18,29 @@ package com.github.gvolpe.tracer.program
 
 import cats.MonadError
 import cats.syntax.all._
+import cats.temp.par._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
+import com.github.gvolpe.tracer.http.client.UserRegistry
 import com.github.gvolpe.tracer.model.errors.UserError._
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 
-class UserProgram[F[_]](repo: UserRepository[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
+class UserProgram[F[_]: Par](
+    repo: UserRepository[F],
+    userRegistry: UserRegistry[F]
+)(implicit F: MonadError[F, Throwable])
+    extends UserAlgebra[F] {
 
-  override def find(username: Username): F[User] =
-    for {
-      mu <- repo.find(username)
-      rs <- mu.fold(F.raiseError[User](UserNotFound(username)))(F.pure)
-    } yield rs
+  def find(username: Username): F[User] =
+    repo.find(username).flatMap {
+      case Some(u) => F.pure(u)
+      case None    => F.raiseError(UserNotFound(username))
+    }
 
-  override def persist(user: User): F[Unit] =
-    for {
-      mu <- repo.find(user.username)
-      rs <- mu.fold(repo.persist(user))(_ => F.raiseError(UserAlreadyExists(user.username)))
-    } yield rs
+  def persist(user: User): F[Unit] =
+    repo.find(user.username).flatMap {
+      case Some(_) => F.raiseError(UserAlreadyExists(user.username))
+      case None    => (userRegistry.register(user), repo.persist(user)).parTupled.void
+    }
 
 }

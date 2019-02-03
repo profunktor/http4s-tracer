@@ -38,6 +38,10 @@ trait UserRepository[F[_]] {
   def find(username: Username): F[Option[User]]
   def persist(user: User): F[Unit]
 }
+
+trait UserRegistry[F[_]] {
+  def register(user: User): F[Unit]
+}
 ```
 
 #### Programs
@@ -47,20 +51,21 @@ Contains pure logic. It can possiby combine multiple algebras as well as other p
 ```tut:book:silent
 import cats.MonadError
 import cats.implicits._
+import cats.temp.par._
 
-class UserProgram[F[_]](repo: UserRepository[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
+class UserProgram[F[_]: Par](repo: UserRepository[F], registry: UserRegistry[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
 
-  override def find(username: Username): F[User] =
-    for {
-      mu <- repo.find(username)
-      rs <- mu.fold(F.raiseError[User](UserNotFound(username)))(F.pure)
-    } yield rs
+  def find(username: Username): F[User] =
+    repo.find(username).flatMap {
+      case Some(u) => F.pure(u)
+      case None    => F.raiseError(UserNotFound(username))
+    }
 
-  override def persist(user: User): F[Unit] =
-    for {
-      mu <- repo.find(user.username)
-      rs <- mu.fold(repo.persist(user))(_ => F.raiseError(UserAlreadyExists(user.username)))
-    } yield rs
+  def persist(user: User): F[Unit] =
+    repo.find(user.username).flatMap {
+      case Some(_) => F.raiseError(UserAlreadyExists(user.username))
+      case None    => (registry.register(user), repo.persist(user)).parTupled.void
+    }
 
 }
 ```
@@ -91,13 +96,7 @@ object MemUserRepository {
 }
 ```
 
-### Distributed Tracing
-
-Note that until here we have only defined `algebras`, `programs` and `interpreters` that can easily be tested in isolation. No tracing concepts so far. And as mentioned in the overview section, the `HttpRoutes` should only be aware of it but we'll also need some tracer interpreters and we will soon see what this means.
-
-#### Http Routes
-
-We need to defined some codecs first that can be used by all our `HttpRoutes`:
+And an interpreter for our `UserRegistry` which calls an external http service. But first we need to define some Json codecs that will also be used by all our `HttpRoutes`:
 
 ```tut:book:silent
 import io.circe.{Decoder, Encoder}
@@ -112,6 +111,30 @@ implicit def valueClassDecoder[A: UnwrappedDecoder]: Decoder[A] = implicitly
 implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
 implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
 ```
+
+Here's our interpreter for `UserRegistry`:
+
+```tut:book:silent
+import io.circe.syntax._
+import org.http4s.Method._
+import org.http4s.client.Client
+import org.http4s.client.dsl.Http4sClientDsl
+
+final case class LiveUserRegistry[F[_]: Sync](client: Client[F]) extends UserRegistry[F]  with Http4sClientDsl[F] {
+
+  private val uri = Uri.uri("https://jsonplaceholder.typicode.com/posts")
+
+  def register(user: User): F[Unit] =
+    client.successful(POST(user.asJson, uri)).void
+}
+
+```
+
+### Distributed Tracing
+
+Note that until here we have only defined `algebras`, `programs` and `interpreters` that can easily be tested in isolation. Neither tracing nor logging concepts so far. And as mentioned in the overview section, the `HttpRoutes` should only be aware of it but we'll also need some tracer interpreters and we will soon see what this means.
+
+#### Http Routes
 
 Use `Http4sTracerDsl[F]` and `TracedHttpRoute` instead of `Http4sDsl[F]` and `HttpRoutes.of[F]` respectively.
 
@@ -165,7 +188,40 @@ This is necessary to pass the "Trace-Id" along and we'll soon see how to do it.
 
 ### Modules
 
-The recommended way to structure tagless final applications is to group things in different modules. For this simple application we will define three modules: `HttpApi`, `Programs` and `Repositories`. In a larger application we might have more modules such as `HttpClients`, etc. The idea will remain the same.
+The recommended way to structure tagless final applications is to group things in different modules. For this simple application we will define four modules: `HttpApi`, `HttpClients`, `Programs` and `Repositories`. In a larger application we might have more modules but the idea remains the same.
+
+#### Repositories module
+
+This is the "master algebra of repositories". And in addition, we provide a way of creating the in-memory interpreter since its creation is effectful.
+
+```tut:book:silent
+trait Repositories[F[_]] {
+  def users: UserRepository[F]
+}
+
+final class LiveRepositories[F[_]](usersRepo: UserRepository[F]) extends Repositories[F] {
+  val users: UserRepository[F] = usersRepo
+}
+
+object LiveRepositories {
+  def apply[F[_]: Sync]: F[Repositories[F]] =
+    MemUserRepository.create[F].map(new LiveRepositories[F](_))
+}
+```
+
+### Http Clients module
+
+The master algebra of the http clients.
+
+```tut:book:silent
+trait HttpClients[F[_]] {
+  def userRegistry: UserRegistry[F]
+}
+
+final case class LiveHttpClients[F[_]: Sync](client: Client[F]) extends HttpClients[F] {
+  def userRegistry: UserRegistry[F] = LiveUserRegistry[F](client)
+}
+```
 
 #### Programs module
 
@@ -175,24 +231,9 @@ This module is going to be the "master algebra" that groups all the single algeb
 trait Programs[F[_]] {
   def users: UserAlgebra[F]
 }
-```
 
-#### Repositories module
-
-In the same way, this is the "master algebra of repositories". And in addition, we provide a way of creating the in-memory interpreter since its creation is effectful.
-
-```tut:book:silent
-trait Repositories[F[_]] {
-  def users: UserRepository[F]
-}
-
-class LiveRepositories[F[_]](usersRepo: UserRepository[F]) extends Repositories[F] {
-  val users: UserRepository[F] = usersRepo
-}
-
-object LiveRepositories {
-  def apply[F[_]: Sync]: F[Repositories[F]] =
-    MemUserRepository.create[F].map(new LiveRepositories[F](_))
+final case class LivePrograms[F[_]: Par: Sync](repos: Repositories[F], clients: HttpClients[F]) extends Programs[F] {
+  def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
 }
 ```
 
@@ -225,7 +266,7 @@ import com.github.gvolpe.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
 
-class HttpApi[F[_]: Sync: Tracer](programs: Programs[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) {
+final case class HttpApi[F[_]: Sync: Tracer](programs: Programs[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) {
 
   private val httpRoutes: HttpRoutes[F] =
     new UserRoutes[F](programs.users).routes
@@ -240,68 +281,80 @@ Note that we again require a `Programs[Trace[F, ?]]` instead of just `Programs[F
 
 ### Tracers
 
-Now that we have defined our program, http routes and modules it's time to introduce the "tracers". These are just interpreters with tracing capabilities written on top of our "group modules". Let's see the code.
+Now that we have defined our program, http routes and modules it's time to introduce the "tracers". These are just interpreters with tracing and logging capabilities written on top of our "group modules". Let's see the code.
 
-#### Traced Programs
+#### Traced Repositories
 
-We extend `Programs` with our effect type being `Trace[F, ?]` and define all the different algebras.
+We extend `Repositories[Trace[F, ?]]` (notice the change in the effect type), receive `Repositories[F]` as a parameter and provide the necessary tracing interpreters.
 
 ```tut:book:silent
+import cats.FlatMap
 import com.github.gvolpe.tracer.Trace
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.TracerLog
 
-class UserTracer[F[_]: Sync](repo: UserRepository[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) extends UserProgram[Trace[F, ?]](repo) {
+final class UserTracerRepository[F[_]: FlatMap](repo: UserRepository[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRepository[Trace[F, ?]] {
 
-  override def find(username: Username): Trace[F, User] =
-    for {
-      _ <- L.info[UserAlgebra[F]](s"Find user by username: ${username.value}")
-      u <- super.find(username)
-    } yield u
+  override def find(username: Username): Trace[F, Option[User]] =
+    L.info[UserRepository[F]](s"Find user by username: ${username.value}") *>
+      Trace(_ => repo.find(username))
 
   override def persist(user: User): Trace[F, Unit] =
-    for {
-      _  <- L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}")
-      rs <- super.persist(user)
-    } yield rs
+    L.info[UserRepository[F]](s"Persisting user: ${user.username.value}") *>
+      Trace(_ => repo.persist(user))
 
 }
 
-class TracedPrograms[F[_]: Sync](repos: Repositories[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) extends Programs[Trace[F, ?]] {
-  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](repos.users)
+case class TracedRepositories[F[_]: FlatMap](repos: Repositories[F])(implicit L: TracerLog[Trace[F, ?]]) extends Repositories[Trace[F, ?]] {
+  val users: UserRepository[Trace[F, ?]] = new UserTracerRepository[F](repos.users)
 }
 ```
 
-In this case we only have one, so we just extend `UserProgram` and write tracing logs on top of it. This is just an
-interpreter that adds tracing capabilities on top of the original program, highly decoupled.
+#### Traced Http Clients
 
-#### Traced Repositories
-
-Again we extend `Repositories[Trace[F, ?]]` and provide the necessary tracing interpreters.
+Again we extend `HttpClients[Trace[F, ?]]` and receive `Client[F]` as a parameter:
 
 ```tut:book:silent
-import cats.FlatMap
+final class TracedUserRegistry[F[_]: Sync](registry: UserRegistry[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRegistry[Trace[F, ?]] {
 
-class UserTracerRepository[F[_]: FlatMap](repo: UserRepository[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRepository[Trace[F, ?]] {
-
-  override def find(username: Username): Trace[F, Option[User]] =
+  override def register(user: User): Trace[F, Unit] =
     for {
-      _ <- L.info[UserRepository[F]](s"Find user by username: ${username.value}")
-      u <- Trace(_ => repo.find(username))
-    } yield u
-
-  override def persist(user: User): Trace[F, Unit] =
-    for {
-      _ <- L.info[UserRepository[F]](s"Persisting user: ${user.username.value}")
-      _ <- Trace(_ => repo.persist(user))
+      _ <- L.info[UserRegistry[F]](s"Registering user: ${user.username.value}")
+      _ <- Trace(_ => registry.register(user))
     } yield ()
 
 }
 
-class TracedRepositories[F[_]: FlatMap](repos: Repositories[F])(implicit L: TracerLog[Trace[F, ?]]) extends Repositories[Trace[F, ?]] {
-  val users: UserRepository[Trace[F, ?]] = new UserTracerRepository[F](repos.users)
+case class TracedHttpClients[F[_]: Sync] (client: Client[F])(implicit L: TracerLog[Trace[F, ?]]) extends HttpClients[Trace[F, ?]] {
+  private val clients = LiveHttpClients[F](client)
+
+  override val userRegistry: UserRegistry[Trace[F, ?]] = new TracedUserRegistry[F](clients.userRegistry)
 }
 ```
+
+#### Traced Programs
+
+We again extend `Programs[Trace[F, ?]]` but in this case we receive other tracer interpreters as parameters:
+
+```tut:book:silent
+final class UserTracer[F[_]: Sync](users: UserAlgebra[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) extends UserAlgebra[Trace[F, ?]] {
+
+  override def find(username: Username): Trace[F, User] =
+    L.info[UserAlgebra[F]](s"Find user by username: ${username.value}") *> users.find(username)
+
+  override def persist(user: User): Trace[F, Unit] =
+    L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}") *> users.persist(user)
+
+}
+
+case class TracedPrograms[F[_]: Par: Sync](repos: TracedRepositories[F], clients: TracedHttpClients[F])(implicit L: TracerLog[Trace[F, ?]]) extends Programs[Trace[F, ?]] {
+  private val programs = LivePrograms[Trace[F, ?]](repos, clients)
+
+  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](programs.users)
+}
+```
+
+You might have noticed that the approach used in `TracedPrograms` is different from the one in `TracedHttpClients` and `TracedRepositories`. The reason is that the last two are at the bottom of the graph so they can be created based on a simple effectful interpreter `F` whereas `TracedPrograms` is one level up and needs to have the tracer instances of such components.
 
 Writing these tracers is the most tedious part as we need to write quite some boilerplate but this is the trade-off for getting nice distributed tracing logs.
 
@@ -312,25 +365,29 @@ Writing these tracers is the most tedious part as we need to write quite some bo
 This is where we instantiate our modules and create our `Tracer` instance. For a default instance with header name "Trace-Id" just use `import com.github.gvolpe.tracer.instances.tracer._`.
 
 ```tut:book:silent
+import com.github.gvolpe.tracer.instances.tracer._
 import com.github.gvolpe.tracer.instances.tracerlog._
+import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
+import scala.concurrent.ExecutionContext
 
-class Main[F[_]: ConcurrentEffect: Timer] {
-
-  implicit val tracer: Tracer[F] = Tracer.create[F]("Flow-Id")
+class Main[F[_]: ConcurrentEffect: Par: Timer] {
 
   val server: F[Unit] =
-    LiveRepositories[F].flatMap { repositories =>
-      val tracedRepos    = new TracedRepositories[F](repositories)
-      val tracedPrograms = new TracedPrograms[F](tracedRepos)
-      val httpApi        = new HttpApi[F](tracedPrograms)
-
-      BlazeServerBuilder[F]
-        .bindHttp(8080, "0.0.0.0")
-        .withHttpApp(httpApi.httpApp)
-        .serve
-        .compile
-        .drain
+    BlazeClientBuilder[F](ExecutionContext.global).resource.use { client =>
+      for {
+        repos          <- LiveRepositories[F]
+        tracedRepos    = TracedRepositories[F](repos)
+        tracedClients  = TracedHttpClients[F](client)
+        tracedPrograms = TracedPrograms[F](tracedRepos, tracedClients)
+        httpApi        = HttpApi[F](tracedPrograms)
+        _ <- BlazeServerBuilder[F]
+              .bindHttp(8080, "0.0.0.0")
+              .withHttpApp(httpApi.httpApp)
+              .serve
+              .compile
+              .drain
+      } yield ()
     }
 
 }
@@ -360,11 +417,13 @@ object Server extends IOApp {
 This is how the activity log might look like for a simple POST request (logging activated):
 
 ```bash
-4:13:48.985 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer$ - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 30))
-14:13:49.282 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.algebra$UserAlgebra - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - About to persist user: modersky
-14:13:49.290 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra$UserRepository - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - Find user by username: modersky
-14:13:49.298 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.repository.algebra$UserRepository - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - Persisting user: modersky
-14:13:49.315 [scala-execution-context-global-17] INFO com.github.gvolpe.tracer.Tracer$ - [TraceId] - [02594e59-4b21-4d0a-aad5-5866a632fbb5] - Response(status=201, headers=Headers(Content-Length: 0, Trace-Id: 02594e59-4b21-4d0a-aad5-5866a632fbb5))
+18:02:25.366 [blaze-selector-0-2] INFO  o.h.b.c.nio1.NIO1SocketServerGroup - Accepted connection from /0:0:0:0:0:0:0:1:58284
+18:02:25.375 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 8))
+18:02:25.527 [ec-1] INFO  c.g.g.tracer.algebra.UserAlgebra - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - About to persist user: gvolpe
+18:02:25.527 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Find user by username: gvolpe
+18:02:25.540 [ec-1] INFO  c.g.g.t.http.client.UserRegistry - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Registering user: gvolpe
+18:02:25.540 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Persisting user: gvolpe
+18:02:26.601 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Response(status=201, headers=Headers(Content-Length: 0, Flow-Id: 6cb069c0-2792-11e9-9038-b9bcfc32f88f))
 ```
 
 Quite useful to trace the flow of your application starting out at each request. In a normal application, you will have thousands of requests and tracing the call-chain in a failure scenario will be invaluable.

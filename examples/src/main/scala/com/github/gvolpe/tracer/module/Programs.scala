@@ -16,8 +16,18 @@
 
 package com.github.gvolpe.tracer.module
 
+import cats.effect.Sync
+import cats.temp.par._
 import com.github.gvolpe.tracer.algebra.UserAlgebra
+import com.github.gvolpe.tracer.program.UserProgram
 
-trait Programs[F[_]] {
+private[module] trait Programs[F[_]] {
   def users: UserAlgebra[F]
+}
+
+final case class LivePrograms[F[_]: Par: Sync](
+    repos: Repositories[F],
+    clients: HttpClients[F]
+) extends Programs[F] {
+  def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
 }

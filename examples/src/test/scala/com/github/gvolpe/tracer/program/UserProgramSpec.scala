@@ -16,16 +16,22 @@
 
 package com.github.gvolpe.tracer.program
 
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import com.github.gvolpe.tracer.IOAssertion
+import com.github.gvolpe.tracer.http.client.TestUserRegistry
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.repository.TestUserRepository
 import org.scalatest.FunSuite
 
+import scala.concurrent.ExecutionContext
+
 class UserProgramSpec extends FunSuite {
 
-  private val repo    = new TestUserRepository[IO]
-  private val program = new UserProgram[IO](repo)
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+
+  private val repo     = new TestUserRepository[IO]
+  private val registry = new TestUserRegistry[IO]
+  private val program  = new UserProgram[IO](repo, registry)
 
   test("find user by username") {
     IOAssertion {

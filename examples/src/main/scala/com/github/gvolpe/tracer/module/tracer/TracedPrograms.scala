@@ -14,37 +14,36 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.tracer
+package com.github.gvolpe.tracer.module.tracer
 
 import cats.effect.Sync
+import cats.temp.par._
+import cats.syntax.apply._
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.module.{Programs, Repositories}
-import com.github.gvolpe.tracer.program.UserProgram
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import com.github.gvolpe.tracer.module.{LivePrograms, Programs}
 
-class TracedPrograms[F[_]: Sync](repos: Repositories[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]])
+case class TracedPrograms[F[_]: Par: Sync](
+    repos: TracedRepositories[F],
+    clients: TracedHttpClients[F]
+)(implicit L: TracerLog[Trace[F, ?]])
     extends Programs[Trace[F, ?]] {
-  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](repos.users)
+  private val programs = LivePrograms[Trace[F, ?]](repos, clients)
+
+  override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](programs.users)
 }
 
-class UserTracer[F[_]: Sync](
-    repo: UserRepository[Trace[F, ?]]
+private[tracer] final class UserTracer[F[_]: Sync](
+    users: UserAlgebra[Trace[F, ?]]
 )(implicit L: TracerLog[Trace[F, ?]])
-    extends UserProgram[Trace[F, ?]](repo) {
+    extends UserAlgebra[Trace[F, ?]] {
 
   override def find(username: Username): Trace[F, User] =
-    for {
-      _ <- L.info[UserAlgebra[F]](s"Find user by username: ${username.value}")
-      u <- super.find(username)
-    } yield u
+    L.info[UserAlgebra[F]](s"Find user by username: ${username.value}") *> users.find(username)
 
   override def persist(user: User): Trace[F, Unit] =
-    for {
-      _  <- L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}")
-      rs <- super.persist(user)
-    } yield rs
+    L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}") *> users.persist(user)
 
 }

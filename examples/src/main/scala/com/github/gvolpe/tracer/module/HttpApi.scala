@@ -19,12 +19,13 @@ package com.github.gvolpe.tracer.module
 import cats.effect.Sync
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.http.UserRoutes
+import com.github.gvolpe.tracer.module.tracer.TracedPrograms
 import com.github.gvolpe.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
 
-class HttpApi[F[_]: Sync: Tracer](
-    programs: Programs[Trace[F, ?]]
+final case class HttpApi[F[_]: Sync: Tracer](
+    programs: TracedPrograms[F]
 )(implicit L: TracerLog[Trace[F, ?]]) {
 
   private val httpRoutes: HttpRoutes[F] =

@@ -18,25 +18,32 @@ package com.github.gvolpe.tracer
 
 import cats.effect._
 import cats.syntax.all._
-import com.github.gvolpe.tracer.module._
+import cats.temp.par._
 import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.tracer.{TracedPrograms, TracedRepositories}
+import com.github.gvolpe.tracer.module._
+import com.github.gvolpe.tracer.module.tracer._
+import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
 
-class Main[F[_]: ConcurrentEffect: Timer: Tracer](implicit L: TracerLog[Trace[F, ?]]) {
+import scala.concurrent.ExecutionContext
+
+class Main[F[_]: ConcurrentEffect: Par: Timer: Tracer](implicit L: TracerLog[Trace[F, ?]]) {
 
   val server: F[Unit] =
-    LiveRepositories[F].flatMap { repositories =>
-      val tracedRepos    = new TracedRepositories[F](repositories)
-      val tracedPrograms = new TracedPrograms[F](tracedRepos)
-      val httpApi        = new HttpApi[F](tracedPrograms)
-
-      BlazeServerBuilder[F]
-        .bindHttp(8080, "0.0.0.0")
-        .withHttpApp(httpApi.httpApp)
-        .serve
-        .compile
-        .drain
+    BlazeClientBuilder[F](ExecutionContext.global).resource.use { client =>
+      for {
+        repos          <- LiveRepositories[F]
+        tracedRepos    = TracedRepositories[F](repos)
+        tracedClients  = TracedHttpClients[F](client)
+        tracedPrograms = TracedPrograms[F](tracedRepos, tracedClients)
+        httpApi        = HttpApi[F](tracedPrograms)
+        _ <- BlazeServerBuilder[F]
+              .bindHttp(8080, "0.0.0.0")
+              .withHttpApp(httpApi.httpApp)
+              .serve
+              .compile
+              .drain
+      } yield ()
     }
 
 }

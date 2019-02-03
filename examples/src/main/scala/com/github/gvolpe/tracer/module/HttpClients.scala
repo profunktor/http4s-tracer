@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.repository
+package com.github.gvolpe.tracer.module
 
 import cats.effect.Sync
-import cats.implicits._
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import com.github.gvolpe.tracer.http.client.{LiveUserRegistry, UserRegistry}
+import org.http4s.client.Client
 
-class TestUserRepository[F[_]: Sync] extends UserRepository[F] {
-  def find(username: Username): F[Option[User]] =
-    (if (username.value == "xxx") none[User] else Some(User(username))).pure[F]
+private[module] trait HttpClients[F[_]] {
+  def userRegistry: UserRegistry[F]
+}
 
-  def persist(user: User): F[Unit] = ().pure[F]
+final case class LiveHttpClients[F[_]: Sync](client: Client[F]) extends HttpClients[F] {
+  def userRegistry: UserRegistry[F] = LiveUserRegistry[F](client)
 }
