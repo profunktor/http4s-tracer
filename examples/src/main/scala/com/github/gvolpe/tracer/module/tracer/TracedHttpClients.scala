@@ -17,6 +17,7 @@
 package com.github.gvolpe.tracer.module.tracer
 
 import cats.effect.Sync
+import cats.syntax.apply._
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.http.client.UserRegistry
 import com.github.gvolpe.tracer.model.user.User
@@ -39,9 +40,7 @@ private[tracer] final class TracedUserRegistry[F[_]: Sync](
     extends UserRegistry[Trace[F, ?]] {
 
   override def register(user: User): Trace[F, Unit] =
-    for {
-      _ <- L.info[UserRegistry[F]](s"Registering user: ${user.username.value}")
-      _ <- Trace(_ => registry.register(user))
-    } yield ()
+    L.info[UserRegistry[F]](s"Registering user: ${user.username.value}") *>
+      Trace(_ => registry.register(user))
 
 }

@@ -17,6 +17,7 @@
 package com.github.gvolpe.tracer.module.tracer
 
 import cats.FlatMap
+import cats.syntax.apply._
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.module.Repositories
@@ -36,15 +37,11 @@ private[tracer] final class UserTracerRepository[F[_]: FlatMap](
     extends UserRepository[Trace[F, ?]] {
 
   override def find(username: Username): Trace[F, Option[User]] =
-    for {
-      _ <- L.info[UserRepository[F]](s"Find user by username: ${username.value}")
-      u <- Trace(_ => repo.find(username))
-    } yield u
+    L.info[UserRepository[F]](s"Find user by username: ${username.value}") *>
+      Trace(_ => repo.find(username))
 
   override def persist(user: User): Trace[F, Unit] =
-    for {
-      _ <- L.info[UserRepository[F]](s"Persisting user: ${user.username.value}")
-      _ <- Trace(_ => repo.persist(user))
-    } yield ()
+    L.info[UserRepository[F]](s"Persisting user: ${user.username.value}") *>
+      Trace(_ => repo.persist(user))
 
 }

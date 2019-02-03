@@ -18,6 +18,7 @@ package com.github.gvolpe.tracer.module.tracer
 
 import cats.effect.Sync
 import cats.temp.par._
+import cats.syntax.apply._
 import com.github.gvolpe.tracer.Trace.Trace
 import com.github.gvolpe.tracer.TracerLog
 import com.github.gvolpe.tracer.algebra.UserAlgebra
@@ -40,15 +41,9 @@ private[tracer] final class UserTracer[F[_]: Sync](
     extends UserAlgebra[Trace[F, ?]] {
 
   override def find(username: Username): Trace[F, User] =
-    for {
-      _ <- L.info[UserAlgebra[F]](s"Find user by username: ${username.value}")
-      u <- users.find(username)
-    } yield u
+    L.info[UserAlgebra[F]](s"Find user by username: ${username.value}") *> users.find(username)
 
   override def persist(user: User): Trace[F, Unit] =
-    for {
-      _  <- L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}")
-      rs <- users.persist(user)
-    } yield rs
+    L.info[UserAlgebra[F]](s"About to persist user: ${user.username.value}") *> users.persist(user)
 
 }
