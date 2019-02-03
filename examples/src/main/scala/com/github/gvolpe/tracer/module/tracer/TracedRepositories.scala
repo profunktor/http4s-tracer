@@ -24,10 +24,9 @@ import com.github.gvolpe.tracer.module.Repositories
 import com.github.gvolpe.tracer.repository.algebra.UserRepository
 import com.github.gvolpe.tracer.{Trace, TracerLog}
 
-case class TracedRepositories[F[_]: FlatMap](
+case class TracedRepositories[F[_]: FlatMap: λ[T[_] => TracerLog[Trace[T, ?]]]](
     repos: Repositories[F]
-)(implicit L: TracerLog[Trace[F, ?]])
-    extends Repositories[Trace[F, ?]] {
+) extends Repositories[Trace[F, ?]] {
   val users: UserRepository[Trace[F, ?]] = new UserTracerRepository[F](repos.users)
 }
 

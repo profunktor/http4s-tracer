@@ -24,9 +24,9 @@ import com.github.gvolpe.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
 
-final case class HttpApi[F[_]: Sync: Tracer](
+final case class HttpApi[F[_]: Sync: Tracer: λ[T[_] => TracerLog[Trace[T, ?]]]](
     programs: TracedPrograms[F]
-)(implicit L: TracerLog[Trace[F, ?]]) {
+) {
 
   private val httpRoutes: HttpRoutes[F] =
     new UserRoutes[F](programs.users).routes

@@ -25,10 +25,9 @@ import com.github.gvolpe.tracer.module.{HttpClients, LiveHttpClients}
 import com.github.gvolpe.tracer.{Trace, TracerLog}
 import org.http4s.client.Client
 
-case class TracedHttpClients[F[_]: Sync] private (
+case class TracedHttpClients[F[_]: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]] private (
     client: Client[F]
-)(implicit L: TracerLog[Trace[F, ?]])
-    extends HttpClients[Trace[F, ?]] {
+) extends HttpClients[Trace[F, ?]] {
   private val clients = LiveHttpClients[F](client)
 
   override val userRegistry: UserRegistry[Trace[F, ?]] = new TracedUserRegistry[F](clients.userRegistry)

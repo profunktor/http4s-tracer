@@ -25,11 +25,10 @@ import com.github.gvolpe.tracer.algebra.UserAlgebra
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.module.{LivePrograms, Programs}
 
-case class TracedPrograms[F[_]: Par: Sync](
+case class TracedPrograms[F[_]: Par: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]](
     repos: TracedRepositories[F],
     clients: TracedHttpClients[F]
-)(implicit L: TracerLog[Trace[F, ?]])
-    extends Programs[Trace[F, ?]] {
+) extends Programs[Trace[F, ?]] {
   private val programs = LivePrograms[Trace[F, ?]](repos, clients)
 
   override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](programs.users)

@@ -209,7 +209,7 @@ object LiveRepositories {
 }
 ```
 
-### Http Clients module
+#### Http Clients module
 
 The master algebra of the http clients.
 

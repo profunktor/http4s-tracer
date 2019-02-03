@@ -25,7 +25,7 @@ import io.circe.generic.auto._
 import org.http4s._
 import org.http4s.server.{AuthMiddleware, Router}
 
-class AuthRoutes[F[_]: Sync: Tracer](userService: UserAlgebra[Trace[F, ?]]) extends Http4sAuthTracerDsl[F] {
+class AuthRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Http4sAuthTracerDsl[F] {
 
   private[http] val PathPrefix = "/auth"
 
