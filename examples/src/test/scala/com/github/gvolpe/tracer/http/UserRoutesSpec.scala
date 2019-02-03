@@ -16,8 +16,9 @@
 
 package com.github.gvolpe.tracer.http
 
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import com.github.gvolpe.tracer.Trace._
+import com.github.gvolpe.tracer.http.client.TestUserRegistry
 import com.github.gvolpe.tracer.instances.tracer._
 import com.github.gvolpe.tracer.model.user.{User, Username}
 import com.github.gvolpe.tracer.program.UserProgram
@@ -26,11 +27,16 @@ import org.http4s.Method._
 import org.http4s.{Request, Status, Uri}
 import org.scalatest.prop.TableFor3
 
+import scala.concurrent.ExecutionContext
+
 class UserRoutesSpec extends HttpRoutesSpec {
 
-  private val repo    = new TestUserRepository[Trace[IO, ?]]
-  private val program = new UserProgram[Trace[IO, ?]](repo)
-  private val routes  = new UserRoutes[IO](program).routes
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+
+  private val repo     = new TestUserRepository[Trace[IO, ?]]
+  private val registry = new TestUserRegistry[Trace[IO, ?]]
+  private val program  = new UserProgram[Trace[IO, ?]](repo, registry)
+  private val routes   = new UserRoutes[IO](program).routes
 
   val requests: TableFor3[String, IO[Request[IO]], Status] = Table(
     ("description", "request", "expectedStatus"),
