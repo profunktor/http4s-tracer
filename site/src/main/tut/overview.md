@@ -38,10 +38,12 @@ This separation of concerns is at the core of `http4s-tracer`'s design.
 A normal application commonly serves hundreds of requests concurrently and being able to trace the call-graph of a single one could be invaluable in failure scenarios. Here's an example of how the logs look like when using the default `TracerLog` instance:
 
 ```bash
-10:50:16.587 [ec-1] INFO  c.g.g.t.Tracer - [Trace-Id] -[490bd050-f442-11e8-a46d-578226236d02] - Request(method=POST, uri=/users, ...)
-10:50:16.768 [ec-1] INFO  c.g.g.t.a.UserAlgebra - [Trace-Id] - [490bd050-f442-11e8-a46d-578226236d02] - About to persist user: gvolpe
-10:50:16.769 [ec-1] INFO  c.g.g.t.r.a$UserRepository - [Trace-Id] - [490bd050-f442-11e8-a46d-578226236d02] - Find user by username: gvolpe
-10:50:16.770 [ec-1] INFO  c.g.g.t.r.a$UserRepository - [Trace-Id] - [490bd050-f442-11e8-a46d-578226236d02] - Persisting user: gvolpe
-10:50:16.773 [ec-1] INFO  c.g.g.t.Tracer - [Trace-Id] - [490bd050-f442-11e8-a46d-578226236d02] - Response(status=201, ...)
+18:02:25.366 [blaze-selector-0-2] INFO  o.h.b.c.nio1.NIO1SocketServerGroup - Accepted connection from /0:0:0:0:0:0:0:1:58284
+18:02:25.375 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 8))
+18:02:25.527 [ec-1] INFO  c.g.g.tracer.algebra.UserAlgebra - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - About to persist user: gvolpe
+18:02:25.527 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Find user by username: gvolpe
+18:02:25.540 [ec-1] INFO  c.g.g.t.http.client.UserRegistry - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Registering user: gvolpe
+18:02:25.540 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Persisting user: gvolpe
+18:02:26.601 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Response(status=201, headers=Headers(Content-Length: 0, Flow-Id: 6cb069c0-2792-11e9-9038-b9bcfc32f88f))
 ```
 
