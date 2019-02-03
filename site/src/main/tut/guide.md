@@ -318,10 +318,8 @@ Again we extend `HttpClients[Trace[F, ?]]` and receive `Client[F]` as a paramete
 final class TracedUserRegistry[F[_]: Sync](registry: UserRegistry[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRegistry[Trace[F, ?]] {
 
   override def register(user: User): Trace[F, Unit] =
-    for {
-      _ <- L.info[UserRegistry[F]](s"Registering user: ${user.username.value}")
-      _ <- Trace(_ => registry.register(user))
-    } yield ()
+    L.info[UserRegistry[F]](s"Registering user: ${user.username.value}") *>
+      Trace(_ => registry.register(user))
 
 }
 
