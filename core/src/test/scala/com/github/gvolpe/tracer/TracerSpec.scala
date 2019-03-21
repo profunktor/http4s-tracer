@@ -23,7 +23,7 @@ import org.http4s.client.dsl.io._
 import org.http4s.dsl.io._
 import org.http4s.implicits._
 import org.scalatest.FunSuite
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.{ScalaCheckPropertyChecks => PropertyChecks}
 
 class TracerSpec extends FunSuite with TracerFixture {
 

@@ -21,7 +21,8 @@ import com.github.gvolpe.tracer.IOAssertion
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.{HttpRoutes, Request, Status}
 import org.scalatest.{Assertion, FunSuite}
-import org.scalatest.prop.{PropertyChecks, TableFor3}
+import org.scalatest.prop.TableFor3
+import org.scalatestplus.scalacheck.{ScalaCheckPropertyChecks => PropertyChecks}
 
 class HttpRoutesSpec extends FunSuite with PropertyChecks with Http4sClientDsl[IO] {
 
