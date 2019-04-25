@@ -10,7 +10,7 @@ object Dependencies {
     val circe       = "0.11.1"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "0.3.0"
-    val zio         = "0.6.3"
+    val zio         = "1.0-RC4"
 
     // Test
     val scalaTest  = "3.0.7"

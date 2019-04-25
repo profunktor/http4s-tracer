@@ -18,15 +18,13 @@ package com.github.gvolpe.tracer
 
 import com.github.gvolpe.tracer.instances.tracer._
 import com.github.gvolpe.tracer.instances.tracerlog._
-import scalaz.zio.{App, Clock, IO}
-import scalaz.zio.interop.Task
+import scalaz.zio._
 import scalaz.zio.interop.catz._
+import scalaz.zio.interop.catz.implicits._
 
-object ZIOServer extends App {
+object ZIOServer extends CatsApp {
 
-  implicit val clock = Clock.Live
-
-  override def run(args: List[String]): IO[Nothing, ExitStatus] =
-    new Main[Task].server.run.map(_ => ExitStatus.ExitNow(0))
+  def run(args: List[String]): UIO[Int] =
+    new Main[Task].server.run.map(_.fold(_ => 1, _ => 0))
 
 }
