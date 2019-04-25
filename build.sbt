@@ -57,7 +57,6 @@ lazy val commonSettings = Seq(
   resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
   scalacOptions := commonScalacOptions,
   scalafmtOnCompile := true,
-  /*coverageExcludedPackages := "com\\.github\\.gvolpe\\.fs2rabbit\\.examples.*;com\\.github\\.gvolpe\\.fs2rabbit\\.typeclasses.*;com\\.github\\.gvolpe\\.fs2rabbit\\.instances.*;.*QueueName*;.*RoutingKey*;.*ExchangeName*;.*DeliveryTag*;.*AmqpClientStream*;.*ConnectionStream*;", */
   publishTo := {
     val sonatype = "https://oss.sonatype.org/"
     if (isSnapshot.value)
