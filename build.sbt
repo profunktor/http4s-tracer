@@ -15,29 +15,6 @@ promptTheme := PromptTheme(List(
   text(_ => "[http4s-tracer]", fg(64)).padRight(" λ ")
  ))
 
-lazy val commonScalacOptions = Seq(
-  "-deprecation",
-  "-encoding", "UTF-8",
-  "-feature",
-  "-language:existentials",
-  "-language:higherKinds",
-  "-language:implicitConversions",
-  "-language:experimental.macros",
-  "-unchecked",
-  "-Ypartial-unification",
-  "-Xfatal-warnings",
-  "-Xlint",
-  "-Yno-adapted-args",
-  "-Ywarn-dead-code",
-  "-Ywarn-value-discard",
-  "-Xfuture",
-  "-Xlog-reflective-calls",
-  "-Ywarn-inaccessible",
-  "-Ypatmat-exhaust-depth", "20",
-  "-Ydelambdafy:method",
-  "-Xmax-classfile-name", "100"
-)
-
 lazy val commonSettings = Seq(
   startYear := Some(2018),
   licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
@@ -55,7 +32,6 @@ lazy val commonSettings = Seq(
     Libraries.scalaCheck % Test
   ),
   resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
-  scalacOptions := commonScalacOptions,
   scalafmtOnCompile := true,
   publishTo := {
     val sonatype = "https://oss.sonatype.org/"
@@ -163,4 +139,4 @@ lazy val microsite = project.in(file("site"))
   .dependsOn(`http4s-tracer`, examples)
 
 // CI build
-addCommandAlias("buildHttp4sTracer", ";clean;+coverage;+test;tut")
+addCommandAlias("buildHttp4sTracer", ";clean;+test;tut")
