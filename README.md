@@ -25,7 +25,7 @@ Find out more in the [microsite](https://gvolpe.github.io/http4s-tracer/).
 
 ### Code of Conduct
 
-See the [Code of Conduct](CODE_OF_CONDUCT.md)
+See the [Code of Conduct](https://gvolpe.github.io/http4s-tracer/CODE_OF_CONDUCT)
 
 ## LICENSE
 

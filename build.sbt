@@ -111,6 +111,11 @@ lazy val microsite = project.in(file("site"))
       file("README.md") -> ExtraMdFileConfig(
         "index.md",
         "home"
+      ),
+      file("CODE_OF_CONDUCT.md") -> ExtraMdFileConfig(
+        "CODE_OF_CONDUCT.md",
+        "page",
+        Map("title" -> "Code of Conduct")
       )
     ),
     micrositePalette := Map(
