@@ -5,11 +5,11 @@ import microsites.ExtraMdFileConfig
 
 name := """https-tracer-root"""
 
-organization in ThisBuild := "com.github.gvolpe"
+organization in ThisBuild := "dev.profunktor"
 
 crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.8")
 
-sonatypeProfileName := "com.github.gvolpe"
+sonatypeProfileName := "dev.profunktor"
 
 promptTheme := PromptTheme(List(
   text(_ => "[http4s-tracer]", fg(64)).padRight(" λ ")
@@ -18,8 +18,8 @@ promptTheme := PromptTheme(List(
 lazy val commonSettings = Seq(
   startYear := Some(2018),
   licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
-  homepage := Some(url("https://github.com/gvolpe/http4s-tracer")),
-  headerLicense := Some(HeaderLicense.ALv2("2018-2019", "Gabriel Volpe")),
+  homepage := Some(url("https://http4s-tracer.profunktor.dev/")),
+  headerLicense := Some(HeaderLicense.ALv2("2018-2019", "ProfunKtor")),
   libraryDependencies ++= Seq(
     compilerPlugin(Libraries.kindProjector),
     compilerPlugin(Libraries.betterMonadicFor),
@@ -48,7 +48,7 @@ lazy val commonSettings = Seq(
         <developer>
           <id>gvolpe</id>
           <name>Gabriel Volpe</name>
-          <url>http://github.com/gvolpe</url>
+          <url>https://github.com/gvolpe</url>
         </developer>
       </developers>
 )
@@ -103,10 +103,10 @@ lazy val microsite = project.in(file("site"))
   .settings(
     micrositeName := "Http4s Tracer",
     micrositeDescription := "End-to-end tracing system for Http4s",
-    micrositeAuthor := "Gabriel Volpe",
-    micrositeGithubOwner := "gvolpe",
+    micrositeAuthor := "ProfunKtor",
+    micrositeGithubOwner := "profunktor",
     micrositeGithubRepo := "http4s-tracer",
-    micrositeBaseUrl := "/http4s-tracer",
+    micrositeBaseUrl := "",
     micrositeExtraMdFiles := Map(
       file("README.md") -> ExtraMdFileConfig(
         "index.md",

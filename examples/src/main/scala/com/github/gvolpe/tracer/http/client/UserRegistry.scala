@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.http
+package dev.profunktor.tracer.http
 package client
 
 import cats.effect.Sync
 import cats.syntax.functor._
-import com.github.gvolpe.tracer.model.user.User
+import dev.profunktor.tracer.model.user.User
 import io.circe.syntax._
 import org.http4s.Method._
 import org.http4s.Uri

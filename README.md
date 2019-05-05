@@ -1,9 +1,9 @@
 http4s-tracer
 =============
 
-[![CircleCI](https://circleci.com/gh/gvolpe/http4s-tracer.svg?style=svg)](https://circleci.com/gh/gvolpe/http4s-tracer)
+[![CircleCI](https://circleci.com/gh/profunktor/http4s-tracer.svg?style=svg)](https://circleci.com/gh/profunktor/http4s-tracer)
 [![Gitter Chat](https://badges.gitter.im/http4s-tracer/http4s-tracer.svg)](https://gitter.im/http4s-tracer/http4s-tracer)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.gvolpe/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer) <a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
+[![Maven Central](https://img.shields.io/maven-central/v/dev.profunktor/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer) <a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
 
 Distributed end-to-end tracing system for `http4s`.
 
@@ -12,20 +12,23 @@ Distributed end-to-end tracing system for `http4s`.
 Add this to your `build.sbt`:
 
 ```
-libraryDependencies += "com.github.gvolpe" %% "http4s-tracer" % Version
+libraryDependencies += "dev.profunktor" %% "http4s-tracer" % Version
 ```
 
 If you would like to have [log4cats](https://christopherdavenport.github.io/log4cats/) support add this extra dependency:
 
 ```
-libraryDependencies += "com.github.gvolpe" %% "http4s-tracer-log4cats" % Version
+libraryDependencies += "dev.profunktor" %% "http4s-tracer-log4cats" % Version
 ```
 
-Find out more in the [microsite](https://gvolpe.github.io/http4s-tracer/).
+Note: previous versions `<= 1.2.1` were published using the `com.github.gvolpe` group id.
+
+
+Find out more in the [microsite](https://http4s-tracer.profunktor.dev/).
 
 ### Code of Conduct
 
-See the [Code of Conduct](https://gvolpe.github.io/http4s-tracer/CODE_OF_CONDUCT)
+See the [Code of Conduct](https://http4s-tracer.profunktor.dev/CODE_OF_CONDUCT)
 
 ## LICENSE
 

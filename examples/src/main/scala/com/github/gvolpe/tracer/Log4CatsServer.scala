@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package dev.profunktor.tracer
 
 import cats.effect._
 import cats.syntax.all._
-import com.github.gvolpe.tracer.instances.tracer._
-import com.github.gvolpe.tracer.log4cats._
+import dev.profunktor.tracer.instances.tracer._
+import dev.profunktor.tracer.log4cats._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 object Log4CatsServer extends IOApp {

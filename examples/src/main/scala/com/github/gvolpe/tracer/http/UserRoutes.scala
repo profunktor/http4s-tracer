@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.http
+package dev.profunktor.tracer.http
 
 import cats.effect.Sync
 import cats.syntax.all._
-import com.github.gvolpe.tracer.Trace._
-import com.github.gvolpe.tracer.algebra.UserAlgebra
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.model.errors.UserError._
-import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
+import dev.profunktor.tracer.Trace._
+import dev.profunktor.tracer.algebra.UserAlgebra
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.model.errors.UserError._
+import dev.profunktor.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
 import org.http4s._
 import org.http4s.server.Router
 

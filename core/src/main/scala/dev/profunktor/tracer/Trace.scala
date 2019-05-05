@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.auth
+package dev.profunktor.tracer
 
-import org.http4s.dsl.Http4sDsl
+import cats.data.Kleisli
+import Tracer.TraceId
 
-trait Http4sAuthTracerDsl[F[_]] extends Http4sDsl[F] with AuthTracerDsl
+object Trace {
+  type Trace[F[_], A] = Kleisli[F, TraceId, A]
 
-object Http4sAuthTracerDsl {
-  def apply[F[_]]: Http4sAuthTracerDsl[F] = new Http4sAuthTracerDsl[F] {}
+  def apply[F[_], A](run: TraceId => F[A]): Trace[F, A] = Kleisli[F, TraceId, A](run)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.repository.interpreter
+package dev.profunktor.tracer.repository.interpreter
 
 import cats.effect.Sync
 import cats.effect.concurrent.Ref
 import cats.syntax.all._
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.repository.algebra.UserRepository
 
 object MemUserRepository {
   def create[F[_]: Sync]: F[UserRepository[F]] =

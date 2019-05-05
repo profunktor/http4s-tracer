@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module.tracer
+package dev.profunktor.tracer.module.tracer
 
 import cats.FlatMap
 import cats.syntax.apply._
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.module.Repositories
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
-import com.github.gvolpe.tracer.{Trace, TracerLog}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.module.Repositories
+import dev.profunktor.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.{Trace, TracerLog}
 
 case class TracedRepositories[F[_]: FlatMap: λ[T[_] => TracerLog[Trace[T, ?]]]](
     repos: Repositories[F]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package dev.profunktor.tracer
 
-import com.github.gvolpe.tracer.TracedHttpRoute.TracedRequest
-import com.github.gvolpe.tracer.Tracer.TraceId
-import org.http4s.Request
+import scala.reflect.ClassTag
 
-trait TracerDsl {
-  object using {
-    def unapply[F[_]](tr: TracedRequest[F]): Option[(Request[F], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+trait TracerLog[F[_]] {
+  def info[A: ClassTag](value: => String): F[Unit]
+  def error[A: ClassTag](value: => String): F[Unit]
+  def warn[A: ClassTag](value: => String): F[Unit]
 }

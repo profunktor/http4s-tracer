@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module
+package dev.profunktor.tracer.module
 
 import cats.effect.Sync
 import cats.syntax.functor._
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
-import com.github.gvolpe.tracer.repository.interpreter.MemUserRepository
+import dev.profunktor.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.repository.interpreter.MemUserRepository
 
 private[module] trait Repositories[F[_]] {
   def users: UserRepository[F]

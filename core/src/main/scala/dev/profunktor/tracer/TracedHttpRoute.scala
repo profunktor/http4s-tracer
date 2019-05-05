@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package dev.profunktor.tracer
 
 import cats.Monad
 import cats.data.{Kleisli, OptionT}
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import com.github.gvolpe.tracer.Tracer.TraceId
+import dev.profunktor.tracer.Tracer.TraceId
 import org.http4s.{HttpRoutes, Request, Response}
 
 object TracedHttpRoute {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module.tracer
+package dev.profunktor.tracer.module.tracer
 
 import cats.effect.Sync
 import cats.temp.par._
 import cats.syntax.apply._
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.TracerLog
-import com.github.gvolpe.tracer.algebra.UserAlgebra
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.module.{LivePrograms, Programs}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.TracerLog
+import dev.profunktor.tracer.algebra.UserAlgebra
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.module.{LivePrograms, Programs}
 
 case class TracedPrograms[F[_]: Par: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]](
     repos: TracedRepositories[F],

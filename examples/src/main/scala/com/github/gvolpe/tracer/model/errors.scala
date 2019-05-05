@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.model
+package dev.profunktor.tracer.model
 
-import com.github.gvolpe.tracer.model.user.Username
+import dev.profunktor.tracer.model.user.Username
 
 object errors {
 

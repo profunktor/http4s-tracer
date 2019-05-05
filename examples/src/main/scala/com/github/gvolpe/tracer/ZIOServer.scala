@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
+package dev.profunktor.tracer
 
-import com.github.gvolpe.tracer.instances.tracer._
-import com.github.gvolpe.tracer.instances.tracerlog._
+import dev.profunktor.tracer.instances.tracer._
+import dev.profunktor.tracer.instances.tracerlog._
 import scalaz.zio._
 import scalaz.zio.interop.catz._
 import scalaz.zio.interop.catz.implicits._

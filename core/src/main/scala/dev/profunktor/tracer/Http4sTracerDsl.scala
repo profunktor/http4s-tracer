@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer
-package instances
+package dev.profunktor.tracer
 
-object tracer {
-  implicit def defaultTracer[F[_]]: Tracer[F] = Tracer.create[F]()
+import org.http4s.dsl.Http4sDsl
+
+trait Http4sTracerDsl[F[_]] extends Http4sDsl[F] with TracerDsl
+
+object Http4sTracerDsl {
+  def apply[F[_]]: Http4sTracerDsl[F] = new Http4sTracerDsl[F] {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.auth
+package dev.profunktor.tracer
 
-import com.github.gvolpe.tracer.Tracer.TraceId
-import com.github.gvolpe.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import dev.profunktor.tracer.TracedHttpRoute.TracedRequest
+import dev.profunktor.tracer.Tracer.TraceId
+import org.http4s.Request
 
-trait AuthTracerDsl {
+trait TracerDsl {
   object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
+    def unapply[F[_]](tr: TracedRequest[F]): Option[(Request[F], TraceId)] =
       Some(tr.request -> tr.traceId)
   }
 }

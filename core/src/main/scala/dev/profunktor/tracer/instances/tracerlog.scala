@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.instances
+package dev.profunktor.tracer.instances
 
 import cats.effect.Sync
 import cats.syntax.flatMap._
-import com.github.gvolpe.tracer.Trace
-import com.github.gvolpe.tracer.Trace._
-import com.github.gvolpe.tracer.TracerLog
+import dev.profunktor.tracer.Trace
+import dev.profunktor.tracer.Trace._
+import dev.profunktor.tracer.TracerLog
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.reflect.ClassTag
