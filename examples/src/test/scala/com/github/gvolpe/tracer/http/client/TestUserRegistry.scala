@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.http.client
+package dev.profunktor.tracer.http.client
 import cats.Applicative
 import cats.syntax.applicative._
-import com.github.gvolpe.tracer.model.user.User
+import dev.profunktor.tracer.model.user.User
 
 class TestUserRegistry[F[_]: Applicative] extends UserRegistry[F] {
   def register(user: User): F[Unit] = ().pure[F]

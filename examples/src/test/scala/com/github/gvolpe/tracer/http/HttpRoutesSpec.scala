@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.http
+package dev.profunktor.tracer.http
 
 import cats.effect.IO
-import com.github.gvolpe.tracer.IOAssertion
+import dev.profunktor.tracer.IOAssertion
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.{HttpRoutes, Request, Status}
 import org.scalatest.{Assertion, FunSuite}

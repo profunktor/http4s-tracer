@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.repository
+package dev.profunktor.tracer.repository
 
 import cats.effect.Sync
 import cats.implicits._
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.repository.algebra.UserRepository
 
 class TestUserRepository[F[_]: Sync] extends UserRepository[F] {
   def find(username: Username): F[Option[User]] =

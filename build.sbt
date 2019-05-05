@@ -19,7 +19,7 @@ lazy val commonSettings = Seq(
   startYear := Some(2018),
   licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   homepage := Some(url("https://http4s-tracer.profunktor.dev/")),
-  headerLicense := Some(HeaderLicense.ALv2("2018-2019", "Gabriel Volpe")),
+  headerLicense := Some(HeaderLicense.ALv2("2018-2019", "ProfunKtor")),
   libraryDependencies ++= Seq(
     compilerPlugin(Libraries.kindProjector),
     compilerPlugin(Libraries.betterMonadicFor),

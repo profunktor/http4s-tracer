@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module
+package dev.profunktor.tracer.module
 
 import cats.effect.Sync
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.http.UserRoutes
-import com.github.gvolpe.tracer.module.tracer.TracedPrograms
-import com.github.gvolpe.tracer.{Tracer, TracerLog}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.http.UserRoutes
+import dev.profunktor.tracer.module.tracer.TracedPrograms
+import dev.profunktor.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
 

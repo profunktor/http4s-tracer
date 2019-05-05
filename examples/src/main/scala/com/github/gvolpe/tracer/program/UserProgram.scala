@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.program
+package dev.profunktor.tracer.program
 
 import cats.MonadError
 import cats.syntax.all._
 import cats.temp.par._
-import com.github.gvolpe.tracer.algebra.UserAlgebra
-import com.github.gvolpe.tracer.http.client.UserRegistry
-import com.github.gvolpe.tracer.model.errors.UserError._
-import com.github.gvolpe.tracer.model.user.{User, Username}
-import com.github.gvolpe.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.algebra.UserAlgebra
+import dev.profunktor.tracer.http.client.UserRegistry
+import dev.profunktor.tracer.model.errors.UserError._
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.repository.algebra.UserRepository
 
 class UserProgram[F[_]: Par](
     repo: UserRepository[F],

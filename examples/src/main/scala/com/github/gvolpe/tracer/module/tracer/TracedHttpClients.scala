@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Gabriel Volpe
+ * Copyright 2018-2019 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.gvolpe.tracer.module.tracer
+package dev.profunktor.tracer.module.tracer
 
 import cats.effect.Sync
 import cats.syntax.apply._
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.http.client.UserRegistry
-import com.github.gvolpe.tracer.model.user.User
-import com.github.gvolpe.tracer.module.{HttpClients, LiveHttpClients}
-import com.github.gvolpe.tracer.{Trace, TracerLog}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.http.client.UserRegistry
+import dev.profunktor.tracer.model.user.User
+import dev.profunktor.tracer.module.{HttpClients, LiveHttpClients}
+import dev.profunktor.tracer.{Trace, TracerLog}
 import org.http4s.client.Client
 
 case class TracedHttpClients[F[_]: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]] private (

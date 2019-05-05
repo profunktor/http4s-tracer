@@ -141,8 +141,8 @@ Use `Http4sTracerDsl[F]` and `TracedHttpRoute` instead of `Http4sDsl[F]` and `Ht
 *For authenticated routes use `Http4sAuthTracerDsl[F]` and `AuthTracedHttpRoute[T, F]` instead.*
 
 ```tut:book:silent
-import com.github.gvolpe.tracer.Trace._
-import com.github.gvolpe.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
+import dev.profunktor.tracer.Trace._
+import dev.profunktor.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
 import io.circe.generic.auto._
 import org.http4s.server.Router
 
@@ -261,8 +261,8 @@ def loggingMiddleware(
 Finally, here we define our `HttpRoutes` and tracing middleware.
 
 ```tut:book:silent
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.{Tracer, TracerLog}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
 
@@ -289,9 +289,9 @@ We extend `Repositories[Trace[F, ?]]` (notice the change in the effect type), re
 
 ```tut:book:silent
 import cats.FlatMap
-import com.github.gvolpe.tracer.Trace
-import com.github.gvolpe.tracer.Trace.Trace
-import com.github.gvolpe.tracer.TracerLog
+import dev.profunktor.tracer.Trace
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.TracerLog
 
 final class UserTracerRepository[F[_]: FlatMap](repo: UserRepository[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRepository[Trace[F, ?]] {
 
@@ -360,11 +360,11 @@ Writing these tracers is the most tedious part as we need to write quite some bo
 
 #### Main entry point
 
-This is where we instantiate our modules and create our `Tracer` instance. For a default instance with header name "Trace-Id" just use `import com.github.gvolpe.tracer.instances.tracer._`.
+This is where we instantiate our modules and create our `Tracer` instance. For a default instance with header name "Trace-Id" just use `import dev.profunktor.tracer.instances.tracer._`.
 
 ```tut:book:silent
-import com.github.gvolpe.tracer.instances.tracer._
-import com.github.gvolpe.tracer.instances.tracerlog._
+import dev.profunktor.tracer.instances.tracer._
+import dev.profunktor.tracer.instances.tracerlog._
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
 import scala.concurrent.ExecutionContext
@@ -395,7 +395,7 @@ class Main[F[_]: ConcurrentEffect: Par: Timer] {
 
 Note that we can get a default instance of `TracerLog` if our effect type has an instance of `Sync` by a single import.
 
-If you are a [log4cats](https://christopherdavenport.github.io/log4cats/) user we can derive a `TracerLog` instance if you provide a `Logger` instance. All you have to do is to import `com.github.gvolpe.tracer.log4cats._` and add the extra dependency `http4s-tracer-log4cats`. See the [Log4CatsServer](https://github.com/gvolpe/http4s-tracer/blob/master/examples/src/main/scala/com/github/gvolpe/tracer/Log4CatsServer.scala) example for more.
+If you are a [log4cats](https://christopherdavenport.github.io/log4cats/) user we can derive a `TracerLog` instance if you provide a `Logger` instance. All you have to do is to import `dev.profunktor.tracer.log4cats._` and add the extra dependency `http4s-tracer-log4cats`. See the [Log4CatsServer](https://github.com/gvolpe/http4s-tracer/blob/master/examples/src/main/scala/dev.profunktor/tracer/Log4CatsServer.scala) example for more.
 
 #### Choose your effect type!
 
@@ -416,12 +416,12 @@ This is how the activity log might look like for a simple POST request (logging 
 
 ```bash
 18:02:25.366 [blaze-selector-0-2] INFO  o.h.b.c.nio1.NIO1SocketServerGroup - Accepted connection from /0:0:0:0:0:0:0:1:58284
-18:02:25.375 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 8))
-18:02:25.527 [ec-1] INFO  c.g.g.tracer.algebra.UserAlgebra - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - About to persist user: gvolpe
-18:02:25.527 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Find user by username: gvolpe
-18:02:25.540 [ec-1] INFO  c.g.g.t.http.client.UserRegistry - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Registering user: gvolpe
-18:02:25.540 [ec-1] INFO  c.g.g.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Persisting user: gvolpe
-18:02:26.601 [ec-1] INFO  com.github.gvolpe.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Response(status=201, headers=Headers(Content-Length: 0, Flow-Id: 6cb069c0-2792-11e9-9038-b9bcfc32f88f))
+18:02:25.375 [ec-1] INFO  dev.profunktor.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Request(method=POST, uri=/users, headers=Headers(HOST: localhost:8080, content-type: application/json, content-length: 8))
+18:02:25.527 [ec-1] INFO  d.p.tracer.algebra.UserAlgebra - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - About to persist user: gvolpe
+18:02:25.527 [ec-1] INFO  d.p.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Find user by username: gvolpe
+18:02:25.540 [ec-1] INFO  d.p.t.http.client.UserRegistry - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Registering user: gvolpe
+18:02:25.540 [ec-1] INFO  d.p.t.r.algebra$UserRepository - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Persisting user: gvolpe
+18:02:26.601 [ec-1] INFO  dev.profunktor.tracer.Tracer - [Trace-Id] - [6cb069c0-2792-11e9-9038-b9bcfc32f88f] - Response(status=201, headers=Headers(Content-Length: 0, Flow-Id: 6cb069c0-2792-11e9-9038-b9bcfc32f88f))
 ```
 
 Quite useful to trace the flow of your application starting out at each request. In a normal application, you will have thousands of requests and tracing the call-chain in a failure scenario will be invaluable.
