@@ -1,11 +1,11 @@
 name: Http4s Tracer
-baseurl: /http4s-tracer
+baseurl: ''
 description: End-to-end tracing system for Http4s
 highlighter: rouge
 docs: true
 collections:
   tut:
     output: true
-version: 1.2.1
-org: com.github.gvolpe
+version: 1.3.0
+org: dev.profunktor
 markdown: kramdown
