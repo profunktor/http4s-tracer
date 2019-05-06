@@ -21,7 +21,8 @@ If you would like to have [log4cats](https://christopherdavenport.github.io/log4
 libraryDependencies += "dev.profunktor" %% "http4s-tracer-log4cats" % Version
 ```
 
-Note: previous versions `<= 1.2.1` were published using the `com.github.gvolpe` group id.
+Note: previous versions `<= 1.2.1` were published using the `com.github.gvolpe` group id (see [migration
+guide](https://github.com/profunktor/http4s-tracer/wiki/Migration-guide-(vim)).
 
 
 Find out more in the [microsite](https://http4s-tracer.profunktor.dev/).
