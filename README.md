@@ -2,7 +2,7 @@ http4s-tracer
 =============
 
 [![CircleCI](https://circleci.com/gh/profunktor/http4s-tracer.svg?style=svg)](https://circleci.com/gh/profunktor/http4s-tracer)
-[![Gitter Chat](https://badges.gitter.im/http4s-tracer/http4s-tracer.svg)](https://gitter.im/http4s-tracer/http4s-tracer)
+[![Gitter Chat](https://badges.gitter.im/profunktor-dev/http4s-tracer.svg)](https://gitter.im/profunktor-dev/http4s-tracer)
 [![Maven Central](https://img.shields.io/maven-central/v/dev.profunktor/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer) <a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
 
 Distributed end-to-end tracing system for `http4s`.
@@ -22,7 +22,7 @@ libraryDependencies += "dev.profunktor" %% "http4s-tracer-log4cats" % Version
 ```
 
 Note: previous versions `<= 1.2.1` were published using the `com.github.gvolpe` group id (see [migration
-guide](https://github.com/profunktor/http4s-tracer/wiki/Migration-guide-(vim)).
+guide](https://github.com/profunktor/http4s-tracer/wiki/Migration-guide-(vim))).
 
 
 Find out more in the [microsite](https://http4s-tracer.profunktor.dev/).
