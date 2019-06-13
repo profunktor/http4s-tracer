@@ -22,14 +22,14 @@ import cats.syntax.flatMap._
 import cats.syntax.functor._
 import dev.profunktor.tracer.Tracer
 import dev.profunktor.tracer.Tracer.TraceId
-import org.http4s.{AuthedRequest, AuthedService, Response}
+import org.http4s.{AuthedRequest, AuthedRoutes, Response}
 
 object AuthTracedHttpRoute {
   case class AuthTracedRequest[F[_], T](traceId: TraceId, request: AuthedRequest[F, T])
 
   def apply[T, F[_]: Monad: Tracer](
       pf: PartialFunction[AuthTracedRequest[F, T], F[Response[F]]]
-  ): AuthedService[T, F] =
+  ): AuthedRoutes[T, F] =
     Kleisli[OptionT[F, ?], AuthedRequest[F, T], Response[F]] { req =>
       OptionT {
         Tracer[F]
