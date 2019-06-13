@@ -31,7 +31,7 @@ class AuthRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Ht
 
   private[http] val PathPrefix = "/auth"
 
-  private val httpRoutes: AuthedService[String, F] = AuthTracedHttpRoute[String, F] {
+  private val httpRoutes: AuthedRoutes[String, F] = AuthTracedHttpRoute[String, F] {
     case GET -> Root as user using traceId =>
       users.find(Username(user)).run(traceId) >> Ok(user -> traceId)
 
