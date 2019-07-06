@@ -13,6 +13,6 @@ addSbtPlugin("com.lucidchart" %  "sbt-scalafmt" % "1.16")
 
 addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.12")
 
-addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.7.27")
+addSbtPlugin("com.47deg"  % "sbt-microsites" % "0.9.2")
 
 addSbtPlugin("com.scalapenos" % "sbt-prompt" % "1.0.2")
