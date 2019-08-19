@@ -18,9 +18,9 @@ package dev.profunktor.tracer
 
 import dev.profunktor.tracer.instances.tracer._
 import dev.profunktor.tracer.instances.tracerlog._
-import scalaz.zio._
-import scalaz.zio.interop.catz._
-import scalaz.zio.interop.catz.implicits._
+import zio._
+import zio.interop.catz._
+import zio.interop.catz.implicits._
 
 object ZIOServer extends CatsApp {
 
