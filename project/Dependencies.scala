@@ -18,7 +18,7 @@ object Dependencies {
     val scalaCheck = "1.14.0"
 
     // Compiler
-    val kindProjector    = "0.9.10"
+    val kindProjector    = "0.10.3"
     val betterMonadicFor = "0.3.1"
 
     // Runtime
@@ -57,7 +57,7 @@ object Dependencies {
     lazy val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.scalaTest
 
     // Compiler
-    lazy val kindProjector    = "org.spire-math" %% "kind-projector"     % Versions.kindProjector // cross CrossVersion.full
+    lazy val kindProjector    = "org.typelevel" %% "kind-projector"     % Versions.kindProjector // cross CrossVersion.full
     lazy val betterMonadicFor = "com.olegpy"     %% "better-monadic-for" % Versions.betterMonadicFor
 
     // Runtime
