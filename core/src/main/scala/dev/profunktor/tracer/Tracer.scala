@@ -20,7 +20,6 @@ import cats.Applicative
 import cats.data.Kleisli
 import cats.effect.Sync
 import cats.syntax.all._
-import com.gilt.timeuuid.TimeUuid
 import org.http4s.syntax.StringSyntax
 import org.http4s.{Header, HttpApp, Request}
 
@@ -66,7 +65,7 @@ class Tracer[F[_]] private (headerName: String) {
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
-          id <- F.delay(TraceId(TimeUuid().toString))
+          id <- GenUUID.make[F]
           tr <- F.delay(req.putHeaders(Header(headerName, id.value)))
         } yield (tr, id)
 

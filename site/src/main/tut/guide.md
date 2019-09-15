@@ -49,11 +49,10 @@ trait UserRegistry[F[_]] {
 Contains pure logic. It can possiby combine multiple algebras as well as other programs but without commiting to a specific implementation:
 
 ```tut:book:silent
-import cats.MonadError
+import cats.{MonadError, Parallel}
 import cats.implicits._
-import cats.temp.par._
 
-class UserProgram[F[_]: Par](repo: UserRepository[F], registry: UserRegistry[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
+class UserProgram[F[_]: Parallel](repo: UserRepository[F], registry: UserRegistry[F])(implicit F: MonadError[F, Throwable]) extends UserAlgebra[F] {
 
   def find(username: Username): F[User] =
     repo.find(username).flatMap {
@@ -232,7 +231,7 @@ trait Programs[F[_]] {
   def users: UserAlgebra[F]
 }
 
-final case class LivePrograms[F[_]: Par: Sync](repos: Repositories[F], clients: HttpClients[F]) extends Programs[F] {
+final case class LivePrograms[F[_]: Parallel: Sync](repos: Repositories[F], clients: HttpClients[F]) extends Programs[F] {
   def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
 }
 ```
@@ -345,7 +344,7 @@ final class UserTracer[F[_]: Sync](users: UserAlgebra[Trace[F, ?]])(implicit L: 
 
 }
 
-case class TracedPrograms[F[_]: Par: Sync](repos: TracedRepositories[F], clients: TracedHttpClients[F])(implicit L: TracerLog[Trace[F, ?]]) extends Programs[Trace[F, ?]] {
+case class TracedPrograms[F[_]: Parallel: Sync](repos: TracedRepositories[F], clients: TracedHttpClients[F])(implicit L: TracerLog[Trace[F, ?]]) extends Programs[Trace[F, ?]] {
   private val programs = LivePrograms[Trace[F, ?]](repos, clients)
 
   override val users: UserAlgebra[Trace[F, ?]] = new UserTracer[F](programs.users)
@@ -369,7 +368,7 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
 import scala.concurrent.ExecutionContext
 
-class Main[F[_]: ConcurrentEffect: Par: Timer] {
+class Main[F[_]: ConcurrentEffect: Parallel: Timer] {
 
   val server: F[Unit] =
     BlazeClientBuilder[F](ExecutionContext.global).resource.use { client =>

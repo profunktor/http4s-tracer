@@ -7,13 +7,19 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "dev.profunktor"
 
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.8")
+crossScalaVersions in ThisBuild := Seq("2.12.9", "2.13.0")
 
 sonatypeProfileName := "dev.profunktor"
 
 promptTheme := PromptTheme(List(
   text(_ => "[http4s-tracer]", fg(64)).padRight(" λ ")
  ))
+
+def uuidDep(v: String): Seq[ModuleID] =
+  CrossVersion.partialVersion(v) match {
+    case Some((2, 13)) => Seq.empty
+    case _             => Seq(Libraries.gfcTimeuuid)
+  }
 
 lazy val commonSettings = Seq(
   startYear := Some(2018),
@@ -27,10 +33,10 @@ lazy val commonSettings = Seq(
     Libraries.fs2Core,
     Libraries.http4sServer,
     Libraries.http4sDsl,
-    Libraries.gfcTimeuuid,
     Libraries.scalaTest  % Test,
     Libraries.scalaCheck % Test
   ),
+  libraryDependencies ++= uuidDep(scalaVersion.value),
   resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
   scalafmtOnCompile := true,
   publishTo := {
@@ -54,7 +60,6 @@ lazy val commonSettings = Seq(
 )
 
 lazy val examplesDependencies = Seq(
-  Libraries.catsPar,
   Libraries.http4sClient,
   Libraries.http4sCirce,
   Libraries.circeCore,

@@ -16,16 +16,15 @@
 
 package dev.profunktor.tracer.program
 
-import cats.MonadError
+import cats.{MonadError, Parallel}
 import cats.syntax.all._
-import cats.temp.par._
 import dev.profunktor.tracer.algebra.UserAlgebra
 import dev.profunktor.tracer.http.client.UserRegistry
 import dev.profunktor.tracer.model.errors.UserError._
 import dev.profunktor.tracer.model.user.{User, Username}
 import dev.profunktor.tracer.repository.algebra.UserRepository
 
-class UserProgram[F[_]: Par](
+class UserProgram[F[_]: Parallel](
     repo: UserRepository[F],
     userRegistry: UserRegistry[F]
 )(implicit F: MonadError[F, Throwable])
