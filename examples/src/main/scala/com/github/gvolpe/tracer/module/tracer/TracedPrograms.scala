@@ -16,8 +16,8 @@
 
 package dev.profunktor.tracer.module.tracer
 
+import cats.Parallel
 import cats.effect.Sync
-import cats.temp.par._
 import cats.syntax.apply._
 import dev.profunktor.tracer.Trace.Trace
 import dev.profunktor.tracer.TracerLog
@@ -25,7 +25,7 @@ import dev.profunktor.tracer.algebra.UserAlgebra
 import dev.profunktor.tracer.model.user.{User, Username}
 import dev.profunktor.tracer.module.{LivePrograms, Programs}
 
-case class TracedPrograms[F[_]: Par: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]](
+case class TracedPrograms[F[_]: Parallel: Sync: λ[T[_] => TracerLog[Trace[T, ?]]]](
     repos: TracedRepositories[F],
     clients: TracedHttpClients[F]
 ) extends Programs[Trace[F, ?]] {

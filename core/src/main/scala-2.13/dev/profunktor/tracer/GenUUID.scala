@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.module
+package dev.profunktor.tracer
 
-import cats.Parallel
 import cats.effect.Sync
-import dev.profunktor.tracer.algebra.UserAlgebra
-import dev.profunktor.tracer.program.UserProgram
+import dev.profunktor.tracer.Tracer.TraceId
+import java.{util => ju}
 
-private[module] trait Programs[F[_]] {
-  def users: UserAlgebra[F]
-}
-
-final case class LivePrograms[F[_]: Parallel: Sync](
-    repos: Repositories[F],
-    clients: HttpClients[F]
-) extends Programs[F] {
-  def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
+object GenUUID {
+  def make[F[_]: Sync]: F[TraceId] =
+    Sync[F].delay(TraceId(ju.UUID.randomUUID().toString()))
 }

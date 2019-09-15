@@ -47,3 +47,4 @@ worker*.log
 tags
 tq:q
 Stuff*
+.sbtopts

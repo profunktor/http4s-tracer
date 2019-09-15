@@ -3,15 +3,14 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val catsPar     = "0.2.1"
-    val catsEffect  = "1.4.0"
-    val fs2         = "1.0.5"
-    val http4s      = "0.20.10"
-    val circe       = "0.11.1"
+    val catsEffect  = "2.0.0"
+    val fs2         = "2.0.0"
+    val http4s      = "0.21.0-M4"
+    val circe       = "0.12.1"
     val gfcTimeuuid = "0.0.8"
-    val log4Cats    = "0.3.0"
+    val log4Cats    = "1.0.0"
     val zio         = "1.0.0-RC12-1"
-    val zioCats     = "2.0.0.0-RC2"
+    val zioCats     = "2.0.0.0-RC3"
 
     // Test
     val scalaTest  = "3.0.8"
@@ -31,7 +30,6 @@ object Dependencies {
     def log4cats(artifact: String): ModuleID                  = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
     def zio(artifact: String, version: String): ModuleID      = "dev.zio"           %% artifact              % version
 
-    lazy val catsPar    = "io.chrisdavenport" %% "cats-par"    % Versions.catsPar
     lazy val catsEffect = "org.typelevel"     %% "cats-effect" % Versions.catsEffect
     lazy val fs2Core    = "co.fs2"            %% "fs2-core"    % Versions.fs2
 
@@ -58,7 +56,7 @@ object Dependencies {
 
     // Compiler
     lazy val kindProjector    = "org.typelevel" %% "kind-projector"     % Versions.kindProjector // cross CrossVersion.full
-    lazy val betterMonadicFor = "com.olegpy"     %% "better-monadic-for" % Versions.betterMonadicFor
+    lazy val betterMonadicFor = "com.olegpy"    %% "better-monadic-for" % Versions.betterMonadicFor
 
     // Runtime
     lazy val logback = "ch.qos.logback" % "logback-classic" % Versions.logback

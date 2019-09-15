@@ -39,7 +39,7 @@ class AuthRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Ht
       Created(user -> traceId)
   }
 
-  lazy val authMiddleware: AuthMiddleware[F, String] = ???
+  lazy val authMiddleware: AuthMiddleware[F, String] = null
 
   lazy val routes: HttpRoutes[F] = Router(
     PathPrefix -> authMiddleware(httpRoutes)
