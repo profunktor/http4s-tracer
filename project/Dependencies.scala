@@ -5,8 +5,8 @@ object Dependencies {
   object Versions {
     val catsEffect  = "2.0.0"
     val fs2         = "2.0.0"
-    val http4s      = "0.21.0-M4"
-    val circe       = "0.12.2"
+    val http4s      = "0.21.0-M5"
+    val circe       = "0.12.1"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "1.0.0"
     val zio         = "1.0.0-RC12-1"
@@ -14,7 +14,7 @@ object Dependencies {
 
     // Test
     val scalaTest  = "3.0.8"
-    val scalaCheck = "1.14.0"
+    val scalaCheck = "1.14.1"
 
     // Compiler
     val kindProjector    = "0.10.3"
