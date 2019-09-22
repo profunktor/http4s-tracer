@@ -4,7 +4,7 @@ object Dependencies {
 
   object Versions {
     val catsEffect  = "2.0.0"
-    val fs2         = "2.0.0"
+    val fs2         = "2.0.1"
     val http4s      = "0.21.0-M5"
     val circe       = "0.12.1"
     val gfcTimeuuid = "0.0.8"
