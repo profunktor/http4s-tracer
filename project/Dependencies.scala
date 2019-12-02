@@ -4,13 +4,13 @@ object Dependencies {
 
   object Versions {
     val catsEffect  = "2.0.0"
-    val fs2         = "2.0.1"
-    val http4s      = "0.21.0-M5"
-    val circe       = "0.12.3"
+    val fs2         = "2.1.0"
+    val http4s      = "0.21.0-M6"
+    val circe       = "0.12.2"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "1.0.1"
-    val zio         = "1.0.0-RC15"
-    val zioCats     = "2.0.0.0-RC6"
+    val zio         = "1.0.0-RC17"
+    val zioCats     = "2.0.0.0-RC10"
 
     // Test
     val scalaTest  = "3.0.8"
