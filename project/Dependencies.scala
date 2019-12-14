@@ -14,7 +14,7 @@ object Dependencies {
 
     // Test
     val scalaTest  = "3.0.8"
-    val scalaCheck = "1.14.2"
+    val scalaCheck = "1.14.3"
 
     // Compiler
     val kindProjector    = "0.10.3"
