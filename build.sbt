@@ -7,7 +7,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "dev.profunktor"
 
-crossScalaVersions in ThisBuild := Seq("2.12.9", "2.13.0")
+crossScalaVersions in ThisBuild := Seq("2.12.10", "2.13.1")
 
 sonatypeProfileName := "dev.profunktor"
 
