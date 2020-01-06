@@ -9,5 +9,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: olafurpg/setup-scala@v5
+    - uses: actions/cache@v1
+      with: ~/.m2/repository
+      key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      restore-keys: |
+      ${{ runner.os }}-maven-
     - name: Build
       run: sbt -J-Xms2G -J-Xmx4G buildHttp4sTracer
