@@ -1,3 +1,10 @@
+---
+layout: docs
+title:  "Guide"
+number: 3
+position: 3
+---
+
 # A guide to a complete application using Http4s Tracer
 
 The following example will follow a (recommended) [tagless final](http://okmij.org/ftp/tagless-final/index.html) encoding:

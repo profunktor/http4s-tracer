@@ -128,7 +128,7 @@ lazy val microsite = project.in(file("site"))
     micrositeGitterChannelUrl := "profunktor-dev/http4s-tracer",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-    scalacOptions --= Seq(
+    scalacOptions in mdoc --= Seq(
       "-Werror",
       "-Xfatal-warnings",
       "-Ywarn-unused-import",
