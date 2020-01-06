@@ -1,10 +1,3 @@
----
-layout: docs
-title:  "Guide"
-number: 3
-position: 3
----
-
 # A guide to a complete application using Http4s Tracer
 
 The following example will follow a (recommended) [tagless final](http://okmij.org/ftp/tagless-final/index.html) encoding:
@@ -15,7 +8,7 @@ The following example will follow a (recommended) [tagless final](http://okmij.o
 
 #### Domain model & Errors
 
-```tut:book:silent
+```scala mdoc:silent
 final case class Username(value: String) extends AnyVal
 final case class User(username: Username)
 
@@ -28,7 +21,7 @@ case class UserNotFound(username: Username)      extends UserError
 
 Also known as interfaces, they define the functionality we want to expose and we will only operate in terms of these definitions:
 
-```tut:book:silent
+```scala mdoc:silent
 trait UserAlgebra[F[_]] {
   def find(username: Username): F[User]
   def persist(user: User): F[Unit]
@@ -48,7 +41,7 @@ trait UserRegistry[F[_]] {
 
 Contains pure logic. It can possiby combine multiple algebras as well as other programs but without commiting to a specific implementation:
 
-```tut:book:silent
+```scala mdoc:silent
 import cats.{MonadError, Parallel}
 import cats.implicits._
 
@@ -73,7 +66,7 @@ class UserProgram[F[_]: Parallel](repo: UserRepository[F], registry: UserRegistr
 
 In this case we will only have a single interpreter for our `Repository`: an in-memory implementation based on `Ref`.
 
-```tut:book:silent
+```scala mdoc:silent
 import cats.effect._
 import cats.effect.concurrent.Ref
 
@@ -97,7 +90,7 @@ object MemUserRepository {
 
 And an interpreter for our `UserRegistry` which calls an external http service. But first we need to define some Json codecs that will also be used by all our `HttpRoutes`:
 
-```tut:book:silent
+```scala mdoc:silent
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.extras.decoding.UnwrappedDecoder
 import io.circe.generic.extras.encoding.UnwrappedEncoder
@@ -113,7 +106,7 @@ implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A]
 
 Here's our interpreter for `UserRegistry`:
 
-```tut:book:silent
+```scala mdoc:silent
 import io.circe.syntax._
 import org.http4s.Method._
 import org.http4s.client.Client
@@ -139,7 +132,7 @@ Use `Http4sTracerDsl[F]` and `TracedHttpRoute` instead of `Http4sDsl[F]` and `Ht
 
 *For authenticated routes use `Http4sAuthTracerDsl[F]` and `AuthTracedHttpRoute[T, F]` instead.*
 
-```tut:book:silent
+```scala mdoc:silent
 import dev.profunktor.tracer.Trace._
 import dev.profunktor.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
 import io.circe.generic.auto._
@@ -193,7 +186,7 @@ The recommended way to structure tagless final applications is to group things i
 
 This is the "master algebra of repositories". And in addition, we provide a way of creating the in-memory interpreter since its creation is effectful.
 
-```tut:book:silent
+```scala mdoc:silent
 trait Repositories[F[_]] {
   def users: UserRepository[F]
 }
@@ -212,7 +205,7 @@ object LiveRepositories {
 
 The master algebra of the http clients.
 
-```tut:book:silent
+```scala mdoc:silent
 trait HttpClients[F[_]] {
   def userRegistry: UserRegistry[F]
 }
@@ -226,7 +219,7 @@ final case class LiveHttpClients[F[_]: Sync](client: Client[F]) extends HttpClie
 
 This module is going to be the "master algebra" that groups all the single algebras.
 
-```tut:book:silent
+```scala mdoc:silent
 trait Programs[F[_]] {
   def users: UserAlgebra[F]
 }
@@ -240,7 +233,7 @@ final case class LivePrograms[F[_]: Parallel: Sync](repos: Repositories[F], clie
 
 Before we look into the `HttpApi` module let's look into the `middleware` signature:
 
-```scala
+```scala mdoc:silent
 def middleware(
   http: HttpApp[F],
   logRequest: Boolean = false,
@@ -250,7 +243,7 @@ def middleware(
 
 You can change the default values of the boolean flags if you want to have the request and/or response logged. If you want both activated there's a another constructor provided by the library:
 
-```scala
+```scala mdoc:silent
 def loggingMiddleware(
     http: HttpApp[F]
 )(implicit F: Sync[F], L: TracerLog[Trace[F, ?]]): HttpApp[F] =
@@ -259,7 +252,7 @@ def loggingMiddleware(
 
 Finally, here we define our `HttpRoutes` and tracing middleware.
 
-```tut:book:silent
+```scala mdoc:silent
 import dev.profunktor.tracer.Trace.Trace
 import dev.profunktor.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
@@ -286,7 +279,7 @@ Now that we have defined our program, http routes and modules it's time to intro
 
 We extend `Repositories[Trace[F, ?]]` (notice the change in the effect type), receive `Repositories[F]` as a parameter and provide the necessary tracing interpreters.
 
-```tut:book:silent
+```scala mdoc:silent
 import cats.FlatMap
 import dev.profunktor.tracer.Trace
 import dev.profunktor.tracer.Trace.Trace
@@ -313,7 +306,7 @@ case class TracedRepositories[F[_]: FlatMap](repos: Repositories[F])(implicit L:
 
 Again we extend `HttpClients[Trace[F, ?]]` and receive `Client[F]` as a parameter:
 
-```tut:book:silent
+```scala mdoc:silent
 final class TracedUserRegistry[F[_]: Sync](registry: UserRegistry[F])(implicit L: TracerLog[Trace[F, ?]]) extends UserRegistry[Trace[F, ?]] {
 
   override def register(user: User): Trace[F, Unit] =
@@ -333,7 +326,7 @@ case class TracedHttpClients[F[_]: Sync] (client: Client[F])(implicit L: TracerL
 
 We again extend `Programs[Trace[F, ?]]` but in this case we receive other tracer interpreters as parameters:
 
-```tut:book:silent
+```scala mdoc:silent
 final class UserTracer[F[_]: Sync](users: UserAlgebra[Trace[F, ?]])(implicit L: TracerLog[Trace[F, ?]]) extends UserAlgebra[Trace[F, ?]] {
 
   override def find(username: Username): Trace[F, User] =
@@ -361,7 +354,7 @@ Writing these tracers is the most tedious part as we need to write quite some bo
 
 This is where we instantiate our modules and create our `Tracer` instance. For a default instance with header name "Trace-Id" just use `import dev.profunktor.tracer.instances.tracer._`.
 
-```tut:book:silent
+```scala mdoc:silent
 import dev.profunktor.tracer.instances.tracer._
 import dev.profunktor.tracer.instances.tracerlog._
 import org.http4s.client.blaze.BlazeClientBuilder
@@ -400,7 +393,7 @@ If you are a [log4cats](https://christopherdavenport.github.io/log4cats/) user w
 
 Here we are going to be using `cats.effect.IO` but you could use your own effect.
 
-```tut:book:silent
+```scala mdoc:silent
 object Server extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] =
@@ -427,7 +420,7 @@ Quite useful to trace the flow of your application starting out at each request.
 
 ### Source code
 
-This documentation is compiled with [tut](http://tpolecat.github.io/tut/) to guarantee it's always updated. However, it is always easier to have a project you can import and easily run so we've got you covered!
+This documentation is compiled with [mdoc](https://github.com/scalameta/mdoc) to guarantee it's always updated. However, it is always easier to have a project you can import and easily run so we've got you covered!
 
 Find the source code in the [examples module](https://github.com/gvolpe/http4s-tracer/tree/master/examples/src).
 

@@ -1,10 +1,3 @@
----
-layout: docs
-title:  "Overview"
-number: 1
-position: 1
----
-
 # Overview
 
 `http4s-tracer` is an end-to-end tracing system for `http4s`.

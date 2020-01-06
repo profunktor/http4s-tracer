@@ -7,7 +7,7 @@ name := """https-tracer-root"""
 
 organization in ThisBuild := "dev.profunktor"
 
-crossScalaVersions in ThisBuild := Seq("2.12.9", "2.13.0")
+crossScalaVersions in ThisBuild := Seq("2.12.10", "2.13.1")
 
 sonatypeProfileName := "dev.profunktor"
 
@@ -123,22 +123,13 @@ lazy val microsite = project.in(file("site"))
         Map("title" -> "Code of Conduct")
       )
     ),
-    micrositePalette := Map(
-      "brand-primary"     -> "#E05236",
-      "brand-secondary"   -> "#631224",
-      "brand-tertiary"    -> "#2D232F",
-      "gray-dark"         -> "#453E46",
-      "gray"              -> "#837F84",
-      "gray-light"        -> "#E3E2E3",
-      "gray-lighter"      -> "#F4F3F4",
-      "white-color"       -> "#FFFFFF"
-    ),
+    micrositeExtraMdFilesOutput := (resourceManaged in Compile).value / "jekyll",
     micrositeGitterChannel := true,
     micrositeGitterChannelUrl := "profunktor-dev/http4s-tracer",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-    fork in tut := true,
-    scalacOptions in Tut --= Seq(
+    scalacOptions --= Seq(
+      "-Werror",
       "-Xfatal-warnings",
       "-Ywarn-unused-import",
       "-Ywarn-numeric-widen",
@@ -149,4 +140,4 @@ lazy val microsite = project.in(file("site"))
   .dependsOn(`http4s-tracer`, examples)
 
 // CI build
-addCommandAlias("buildHttp4sTracer", ";clean;+test;tut")
+addCommandAlias("buildHttp4sTracer", ";clean;+test;mdoc")

@@ -1,10 +1,3 @@
----
-layout: docs
-title:  "Motivations"
-number: 2
-position: 2
----
-
 # Motivations
 
 Nowadays most backend-software is written as a microservice that needs to interact with other internal and possibly external services. Although the benefits are quite obvious (independently deployable and managed, etc) there are some associated challenges.
