@@ -14,21 +14,21 @@ jobs:
     - uses: actions/checkout@v2
     - uses: olafurpg/setup-scala@v5
 
-    #- name: Cache Coursier dependencies
-    #  uses: actions/cache@v1
-    #  with:
-    #   path: ~/.cache/coursier
-    #   key: ${{ runner.os }}-${{ github.ref }}
-    #   restore-keys: |
-    #    ${{ runner.os }}-${{ github.ref }}
+    - name: Cache Coursier dependencies
+      uses: actions/cache@v1
+      with:
+       path: ~/.cache/coursier
+       key: ${{ runner.os }}-${{ github.ref }}
+       restore-keys: |
+        ${{ runner.os }}-${{ github.ref }}
 
-    #- name: Cache Ivy dependencies
-    #  uses: actions/cache@v1
-    #  with:
-    #    path: ~/.ivy2/cache
-    #    key: ${{ runner.os }}-${{ github.ref }}
-    #    restore-keys: |
-    #     ${{ runner.os }}-${{ github.ref }}
+    - name: Cache Ivy dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.ivy2/cache
+        key: ${{ runner.os }}-${{ github.ref }}
+        restore-keys: |
+         ${{ runner.os }}-${{ github.ref }}
 
     - name: Build
       run: sbt -J-Xms2G -J-Xmx4G buildHttp4sTracer
