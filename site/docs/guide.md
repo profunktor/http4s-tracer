@@ -15,7 +15,7 @@ The following example will follow a (recommended) [tagless final](http://okmij.o
 
 #### Domain model & Errors
 
-```scala mdoc:silent
+```scala mdoc:reset-object:silent
 final case class Username(value: String) extends AnyVal
 final case class User(username: Username)
 
@@ -142,7 +142,6 @@ Use `Http4sTracerDsl[F]` and `TracedHttpRoute` instead of `Http4sDsl[F]` and `Ht
 ```scala mdoc:silent
 import dev.profunktor.tracer.Trace._
 import dev.profunktor.tracer.{Http4sTracerDsl, TracedHttpRoute, Tracer}
-import io.circe.generic.auto._
 import org.http4s.server.Router
 
 class UserRoutes[F[_]: Sync: Tracer](users: UserAlgebra[Trace[F, ?]]) extends Http4sTracerDsl[F] {
