@@ -1,7 +1,7 @@
 http4s-tracer
 =============
 
-[![CircleCI](https://circleci.com/gh/profunktor/http4s-tracer.svg?style=svg)](https://circleci.com/gh/profunktor/http4s-tracer)
+[![Actions Status](https://github.com/profunktor/http4s-tracer/workflows/Build/badge.svg)](https://github.com/profunktor/http4s-tracer/actions)
 [![Gitter Chat](https://badges.gitter.im/profunktor-dev/http4s-tracer.svg)](https://gitter.im/profunktor-dev/http4s-tracer)
 [![Maven Central](https://img.shields.io/maven-central/v/dev.profunktor/http4s-tracer_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Chttp4s-tracer) <a href="https://typelevel.org/cats/"><img src="https://typelevel.org/cats/img/cats-badge.svg" height="40px" align="right" alt="Cats friendly" /></a>
 [![MergifyStatus](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/profunktor/http4s-tracer&style=flat)](https://mergify.io)
