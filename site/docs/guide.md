@@ -259,7 +259,10 @@ def loggingMiddleware(
 Finally, here we define our `HttpRoutes` and tracing middleware.
 
 ```scala mdoc:silent
+import cats.effect.Sync
 import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.http.UserRoutes
+import dev.profunktor.tracer.module.tracer.TracedPrograms
 import dev.profunktor.tracer.{Tracer, TracerLog}
 import org.http4s.implicits._
 import org.http4s.{HttpApp, HttpRoutes}
