@@ -1,0 +1,34 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: olafurpg/setup-scala@v5
+
+    - name: Cache Coursier dependencies
+      uses: actions/cache@v1
+      with:
+       path: ~/.cache/coursier
+       key: ${{ runner.os }}-${{ github.ref }}-coursier
+       restore-keys: |
+        ${{ runner.os }}-${{ github.ref }}-coursier
+
+    - name: Cache Ivy dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.ivy2/cache
+        key: ${{ runner.os }}-${{ github.ref }}-ivy2
+        restore-keys: |
+         ${{ runner.os }}-${{ github.ref }}-ivy2
+
+    - name: Build
+      run: sbt -J-Xms2G -J-Xmx4G buildHttp4sTracer
