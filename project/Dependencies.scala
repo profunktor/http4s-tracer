@@ -3,10 +3,10 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val catsEffect  = "2.1.0"
+    val catsEffect  = "2.1.1"
     val fs2         = "2.2.2"
-    val http4s      = "0.21.0-RC4"
-    val circe       = "0.12.3"
+    val http4s      = "0.21.0-RC5"
+    val circe       = "0.12.2"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "1.0.1"
     val zio         = "1.0.0-RC17"
