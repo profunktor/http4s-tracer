@@ -17,7 +17,6 @@
 package dev.profunktor.tracer
 
 import cats.effect._
-import cats.syntax.functor._
 import dev.profunktor.tracer.instances.tracerlog._
 
 object Server extends IOApp {
