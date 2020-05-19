@@ -5,11 +5,11 @@ object Dependencies {
   object Versions {
     val catsEffect  = "2.1.2"
     val fs2         = "2.3.0"
-    val http4s      = "0.21.3"
+    val http4s      = "0.21.4"
     val circe       = "0.13.0"
     val gfcTimeuuid = "0.0.8"
-    val log4Cats    = "1.1.1"
-    val zio         = "1.0.0-RC19-1"
+    val log4Cats    = "1.0.1"
+    val zio         = "1.0.0-RC19-2"
     val zioCats     = "2.0.0.0-RC14"
 
     // Test
@@ -25,13 +25,13 @@ object Dependencies {
   }
 
   object Libraries {
-    def circe(artifact: String): ModuleID                     = "io.circe"          %% s"circe-$artifact"    % Versions.circe
-    def http4s(artifact: String): ModuleID                    = "org.http4s"        %% s"http4s-$artifact"   % Versions.http4s
-    def log4cats(artifact: String): ModuleID                  = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
-    def zio(artifact: String, version: String): ModuleID      = "dev.zio"           %% artifact              % version
+    def circe(artifact: String): ModuleID                = "io.circe"          %% s"circe-$artifact"    % Versions.circe
+    def http4s(artifact: String): ModuleID               = "org.http4s"        %% s"http4s-$artifact"   % Versions.http4s
+    def log4cats(artifact: String): ModuleID             = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
+    def zio(artifact: String, version: String): ModuleID = "dev.zio"           %% artifact              % version
 
-    lazy val catsEffect = "org.typelevel"     %% "cats-effect" % Versions.catsEffect
-    lazy val fs2Core    = "co.fs2"            %% "fs2-core"    % Versions.fs2
+    lazy val catsEffect = "org.typelevel" %% "cats-effect" % Versions.catsEffect
+    lazy val fs2Core    = "co.fs2"        %% "fs2-core"    % Versions.fs2
 
     lazy val http4sServer = http4s("blaze-server")
     lazy val http4sClient = http4s("blaze-client")
@@ -55,7 +55,7 @@ object Dependencies {
     lazy val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.scalaTest
 
     // Compiler
-    lazy val kindProjector    = "org.typelevel" %% "kind-projector"     % Versions.kindProjector  cross CrossVersion.full
+    lazy val kindProjector    = "org.typelevel" %% "kind-projector"     % Versions.kindProjector cross CrossVersion.full
     lazy val betterMonadicFor = "com.olegpy"    %% "better-monadic-for" % Versions.betterMonadicFor
 
     // Runtime

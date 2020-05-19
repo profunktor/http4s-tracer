@@ -16,16 +16,16 @@
 
 package dev.profunktor.tracer
 
-import cats.Parallel
+import scala.concurrent.ExecutionContext
+
 import cats.effect._
 import cats.implicits._
-import dev.profunktor.tracer.Trace.Trace
+import cats.Parallel
 import dev.profunktor.tracer.module._
 import dev.profunktor.tracer.module.tracer._
+import dev.profunktor.tracer.Trace.Trace
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze.BlazeServerBuilder
-
-import scala.concurrent.ExecutionContext
 
 class Main[F[_]: ConcurrentEffect: Parallel: Timer: Tracer: λ[T[_] => TracerLog[Trace[T, ?]]]] {
 
@@ -37,7 +37,8 @@ class Main[F[_]: ConcurrentEffect: Parallel: Timer: Tracer: λ[T[_] => TracerLog
         tracedClients  = TracedHttpClients[F](client)
         tracedPrograms = TracedPrograms[F](tracedRepos, tracedClients)
         httpApi        = HttpApi[F](tracedPrograms)
-        _ <- BlazeServerBuilder[F]
+        _ <- BlazeServerBuilder
+              .apply[F](ExecutionContext.global)
               .bindHttp(8080, "0.0.0.0")
               .withHttpApp(httpApi.httpApp)
               .serve
