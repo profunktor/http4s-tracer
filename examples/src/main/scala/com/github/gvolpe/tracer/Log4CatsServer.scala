@@ -17,7 +17,6 @@
 package dev.profunktor.tracer
 
 import cats.effect._
-import cats.syntax.all._
 import dev.profunktor.tracer.instances.tracer._
 import dev.profunktor.tracer.log4cats._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
