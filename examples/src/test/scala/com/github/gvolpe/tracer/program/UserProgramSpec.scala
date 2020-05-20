@@ -16,16 +16,16 @@
 
 package dev.profunktor.tracer.program
 
-import cats.effect.{ContextShift, IO}
-import dev.profunktor.tracer.IOAssertion
-import dev.profunktor.tracer.http.client.TestUserRegistry
-import dev.profunktor.tracer.model.user.{User, Username}
-import dev.profunktor.tracer.repository.TestUserRepository
-import org.scalatest.FunSuite
-
 import scala.concurrent.ExecutionContext
 
-class UserProgramSpec extends FunSuite {
+import cats.effect.{ContextShift, IO}
+import dev.profunktor.tracer.http.client.TestUserRegistry
+import dev.profunktor.tracer.IOAssertion
+import dev.profunktor.tracer.model.user.{User, Username}
+import dev.profunktor.tracer.repository.TestUserRepository
+import org.scalatest.funsuite.AnyFunSuite
+
+class UserProgramSpec extends AnyFunSuite {
 
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
