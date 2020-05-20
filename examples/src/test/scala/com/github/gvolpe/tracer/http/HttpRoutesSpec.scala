@@ -20,11 +20,12 @@ import cats.effect.IO
 import dev.profunktor.tracer.IOAssertion
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.{HttpRoutes, Request, Status}
-import org.scalatest.{Assertion, FunSuite}
+import org.scalatest.Assertion
+import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.prop.TableFor3
-import org.scalatestplus.scalacheck.{ScalaCheckPropertyChecks => PropertyChecks}
+import org.scalatest.prop.{TableDrivenPropertyChecks => PropertyChecks}
 
-class HttpRoutesSpec extends FunSuite with PropertyChecks with Http4sClientDsl[IO] {
+class HttpRoutesSpec extends AnyFunSuite with PropertyChecks with Http4sClientDsl[IO] {
 
   def propertySpec(requests: TableFor3[String, IO[Request[IO]], Status], routes: HttpRoutes[IO]): Unit =
     forAll(requests) { (description, request, expectedStatus) =>

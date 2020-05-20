@@ -13,7 +13,7 @@ object Dependencies {
     val zioCats     = "2.0.0.0-RC14"
 
     // Test
-    val scalaTest  = "3.0.8"
+    val scalaTest  = "3.1.2"
     val scalaCheck = "1.14.3"
 
     // Compiler
