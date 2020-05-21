@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: "actions/checkout@v2.1.0"
-      - uses: "olafurpg/setup-scala@v5"
+      - uses: "olafurpg/setup-java@v6"
       - uses: "olafurpg/setup-gpg@v2"
       - env:
           PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
