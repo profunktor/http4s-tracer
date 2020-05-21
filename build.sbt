@@ -3,7 +3,7 @@ import com.scalapenos.sbt.prompt._
 import Dependencies._
 import microsites.ExtraMdFileConfig
 
-name := """https-tracer-root"""
+name := """https-tracer"""
 
 ThisBuild / organization := "dev.profunktor"
 ThisBuild / crossScalaVersions := List("2.12.10", "2.13.2")
