@@ -49,25 +49,7 @@ lazy val commonSettings = List(
   ),
   libraryDependencies ++= uuidDep(scalaVersion.value),
   resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
-  scalafmtOnCompile := true,
-  publishTo := {
-    val sonatype = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at sonatype + "content/repositories/snapshots")
-    else
-      Some("releases" at sonatype + "service/local/staging/deploy/maven2")
-  },
-  publishMavenStyle := true,
-  publishArtifact in Test := false,
-  pomIncludeRepository := { _ => false },
-  pomExtra :=
-    <developers>
-        <developer>
-          <id>gvolpe</id>
-          <name>Gabriel Volpe</name>
-          <url>https://github.com/gvolpe</url>
-        </developer>
-      </developers>
+  scalafmtOnCompile := true
 )
 
 lazy val examplesDependencies = List(
