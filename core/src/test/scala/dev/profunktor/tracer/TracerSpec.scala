@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 ProfunKtor
+ * Copyright 2018-2020 ProfunKtor
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,67 +18,83 @@ package dev.profunktor.tracer
 
 import cats.effect.IO
 import dev.profunktor.tracer.instances.tracerlog._
+import munit.FunSuite
 import org.http4s._
 import org.http4s.client.dsl.io._
 import org.http4s.dsl.io._
 import org.http4s.implicits._
-import org.scalatest.funsuite.AnyFunSuite
-import org.scalatest.prop.{TableDrivenPropertyChecks => PropertyChecks}
 
-class TracerSpec extends AnyFunSuite with PropertyChecks with TracerFixture {
+class TracerSpec extends FunSuite {
 
-  forAll(examples) { (name, request, tracer, assertions) =>
-    test(name) {
-      IOAssertion {
-        for {
-          req  <- request
-          resp <- tracer(req)
-          _    <- assertions(resp)
-        } yield ()
-      }
-    }
-  }
-
-}
-
-// format: off
-trait TracerFixture extends PropertyChecks {
+  // format: off
+  override def munitValueTransforms =
+    super.munitValueTransforms :+ new ValueTransform("IO", {
+      case ioa: IO[_] => IO.suspend(ioa).unsafeToFuture
+    })
+  // format: on
 
   val customHeaderName  = "Test-Id"
   val customHeaderValue = "my-custom-value"
 
-  val tracer: Tracer[IO] = Tracer.create[IO]()
+  val tracer: Tracer[IO]       = Tracer.create[IO]()
   val customTracer: Tracer[IO] = Tracer.create[IO](customHeaderName)
 
-  val tracerApp: HttpApp[IO]        = tracer.middleware(TestHttpRoute.routes(tracer).orNotFound)
-  val customTracerApp: HttpApp[IO]  = customTracer.middleware(TestHttpRoute.routes(customTracer).orNotFound)
+  val tracerApp: HttpApp[IO]       = tracer.middleware(TestHttpRoute.routes(tracer).orNotFound)
+  val customTracerApp: HttpApp[IO] = customTracer.middleware(TestHttpRoute.routes(customTracer).orNotFound)
 
-  def defaultAssertion(traceHeaderName: String): Response[IO] => IO[Unit] = resp =>
-    IO {
-      assert(resp.status == Status.Ok)
-      assert(resp.headers.toList.map(_.name.value).contains(traceHeaderName))
+  def defaultAssertion(traceHeaderName: String): Response[IO] => IO[Unit] =
+    resp =>
+      IO {
+        assert(resp.status == Status.Ok)
+        assert(resp.headers.toList.map(_.name.value).contains(traceHeaderName))
     }
 
-  def customAssertion(traceHeaderName: String): Response[IO] => IO[Unit] = resp =>
-    IO {
-      assert(resp.status == Status.Ok)
-      assert(resp.headers.toList.map(_.name.value).contains(traceHeaderName))
-      assert(resp.headers.toList.map(_.value).contains(customHeaderValue))
+  def customAssertion(traceHeaderName: String): Response[IO] => IO[Unit] =
+    resp =>
+      IO {
+        assert(resp.status == Status.Ok)
+        assert(resp.headers.toList.map(_.name.value).contains(traceHeaderName))
+        assert(resp.headers.toList.map(_.value).contains(customHeaderValue))
     }
 
-  val examples = Table(
-    ("name", "request", "tracer", "assertions"),
-    ("Default TraceId header is created", GET(Uri.uri("/")), tracerApp, defaultAssertion(Tracer.DefaultTraceIdHeader)),
-    ("TraceId header is passed in the request (no TraceId created)", GET(Uri.uri("/"), Header(Tracer.DefaultTraceIdHeader, customHeaderValue)), tracerApp, customAssertion(Tracer.DefaultTraceIdHeader)),
-    ("Custom TraceId header (Test-Id) is created", GET(Uri.uri("/")), customTracerApp, defaultAssertion(customHeaderName)),
-    ("TraceId header (Test-Id) is passed in the request", GET(Uri.uri("/"), Header(customHeaderName, customHeaderValue)), customTracerApp, customAssertion(customHeaderName))
-  )
+  test("Default TraceId header is created") {
+    for {
+      req  <- GET(Uri.uri("/"))
+      resp <- tracerApp(req)
+      _    <- defaultAssertion(Tracer.DefaultTraceIdHeader)(resp)
+    } yield ()
+  }
+
+  test("TraceId header is passed in the request (no TraceId created)") {
+    for {
+      req  <- GET(Uri.uri("/"), Header(Tracer.DefaultTraceIdHeader, customHeaderValue))
+      resp <- tracerApp(req)
+      _    <- customAssertion(Tracer.DefaultTraceIdHeader)(resp)
+    } yield ()
+  }
+
+  test("Custom TraceId header (Test-Id) is created") {
+    for {
+      req  <- GET(Uri.uri("/"))
+      resp <- customTracerApp(req)
+      _    <- defaultAssertion(customHeaderName)(resp)
+    } yield ()
+  }
+
+  test("TraceId header (Test-Id) is passed in the request") {
+    for {
+      req  <- GET(Uri.uri("/"), Header(customHeaderName, customHeaderValue))
+      resp <- customTracerApp(req)
+      _    <- customAssertion(customHeaderName)(resp)
+    } yield ()
+  }
 
 }
 
 object TestHttpRoute extends Http4sTracerDsl[IO] {
-  def routes(implicit t: Tracer[IO]): HttpRoutes[IO] = TracedHttpRoute[IO] {
-    case GET -> Root using traceId =>
-      Ok(traceId.value)
-  }
+  def routes(implicit t: Tracer[IO]): HttpRoutes[IO] =
+    TracedHttpRoute[IO] {
+      case GET -> Root using traceId =>
+        Ok(traceId.value)
+    }
 }

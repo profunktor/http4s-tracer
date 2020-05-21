@@ -17,10 +17,16 @@
 package dev.profunktor.tracer
 
 import cats.effect.Sync
-import dev.profunktor.tracer.Tracer.TraceId
-import java.{util => ju}
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.extras.decoding.UnwrappedDecoder
+import io.circe.generic.extras.encoding.UnwrappedEncoder
+import org.http4s.{EntityDecoder, EntityEncoder}
+import org.http4s.circe.{jsonEncoderOf, jsonOf}
 
-object GenUUID {
-  def make[F[_]: Sync]: F[TraceId] =
-    Sync[F].delay(TraceId(ju.UUID.randomUUID().toString()))
+package object http {
+  implicit def valueClassEncoder[A: UnwrappedEncoder]: Encoder[A] = implicitly
+  implicit def valueClassDecoder[A: UnwrappedDecoder]: Decoder[A] = implicitly
+
+  implicit def jsonDecoder[F[_]: Sync, A <: Product: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
+  implicit def jsonEncoder[F[_]: Sync, A <: Product: Encoder]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
 }

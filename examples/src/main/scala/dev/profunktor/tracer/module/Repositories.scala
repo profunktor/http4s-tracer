@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer.module
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import cats.effect.Sync
+import cats.syntax.functor._
+import dev.profunktor.tracer.repository.algebra.UserRepository
+import dev.profunktor.tracer.repository.interpreter.MemUserRepository
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+private[module] trait Repositories[F[_]] {
+  def users: UserRepository[F]
+}
+
+object LiveRepositories {
+  def apply[F[_]: Sync]: F[Repositories[F]] =
+    MemUserRepository.create[F].map(new LiveRepositories[F](_))
+}
+
+final class LiveRepositories[F[_]](usersRepo: UserRepository[F]) extends Repositories[F] {
+  val users: UserRepository[F] = usersRepo
 }

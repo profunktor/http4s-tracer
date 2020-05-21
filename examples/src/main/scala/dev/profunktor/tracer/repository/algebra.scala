@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer.repository
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import dev.profunktor.tracer.model.user.{User, Username}
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
+object algebra {
+
+  trait UserRepository[F[_]] {
+    def find(username: Username): F[Option[User]]
+    def persist(user: User): F[Unit]
   }
+
 }

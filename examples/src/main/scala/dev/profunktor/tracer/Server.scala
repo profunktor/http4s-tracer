@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import cats.effect._
+import dev.profunktor.tracer.instances.tracerlog._
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+object Server extends IOApp {
+
+  // For a default instance with header name "Trace-Id" just use `import dev.profunktor.tracer.instances.tracer._`
+  implicit val tracer = Tracer.create[IO]("Flow-Id")
+
+  override def run(args: List[String]): IO[ExitCode] =
+    new Main[IO].server.as(ExitCode.Success)
+
 }

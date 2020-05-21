@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer.model
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import dev.profunktor.tracer.model.user.Username
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
+object errors {
+
+  sealed trait UserError extends Exception
+  object UserError {
+    case class UserAlreadyExists(username: Username) extends UserError
+    case class UserNotFound(username: Username)      extends UserError
   }
+
 }

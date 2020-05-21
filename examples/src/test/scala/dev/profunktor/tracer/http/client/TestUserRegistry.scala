@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer.http.client
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import cats.Applicative
+import cats.syntax.applicative._
+import dev.profunktor.tracer.model.user.User
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+class TestUserRegistry[F[_]: Applicative] extends UserRegistry[F] {
+  def register(user: User): F[Unit] = ().pure[F]
 }

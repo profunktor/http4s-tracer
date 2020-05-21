@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import dev.profunktor.tracer.instances.tracer._
+import dev.profunktor.tracer.instances.tracerlog._
+import zio._
+import zio.interop.catz._
+import zio.interop.catz.implicits._
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+object ZIOServer extends CatsApp {
+
+  def run(args: List[String]): UIO[Int] =
+    new Main[Task].server.run.map(_.fold(_ => 1, _ => 0))
+
 }
