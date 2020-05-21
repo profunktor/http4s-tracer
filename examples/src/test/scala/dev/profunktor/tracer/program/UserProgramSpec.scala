@@ -51,13 +51,9 @@ class UserProgramSpec extends IOSuite {
   }
 
   // This test doesn't really do what it means because of the flaky repository implementation
-  test("conflict when persisting same user") {
+  test("conflict when persisting same user".flaky) {
     val user = User(Username("gvolpe"))
-    val rs = for {
-      _ <- program.persist(user)
-      _ <- program.persist(user)
-    } yield ()
-    rs.attempt.map { either =>
+    (program.persist(user) >> program.persist(user)).attempt.map { either =>
       assert(either.isLeft)
     }
   }

@@ -8,8 +8,6 @@ name := """https-tracer"""
 ThisBuild / organization := "dev.profunktor"
 ThisBuild / crossScalaVersions := List("2.12.10", "2.13.2")
 
-sonatypeProfileName := "dev.profunktor"
-
 promptTheme := PromptTheme(
   List(
     text(_ => "[http4s-tracer]", fg(64)).padRight(" λ ")

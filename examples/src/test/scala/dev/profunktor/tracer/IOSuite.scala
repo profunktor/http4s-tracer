@@ -24,6 +24,8 @@ abstract class IOSuite extends FunSuite {
 
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
+  override def munitFlakyOK: Boolean = true
+
   // format: off
   override def munitValueTransforms =
     super.munitValueTransforms :+ new ValueTransform("IO", {
