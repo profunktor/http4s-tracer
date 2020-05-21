@@ -27,7 +27,14 @@ inThisBuild(
     organization := "dev.profunktor",
     homepage := Some(url("https://profunktor.dev/")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-    developers := List()
+    developers := List(
+      Developer(
+        "gvolpe",
+        "Gabriel Volpe",
+        "volpegabriel@gmail.com",
+        url("https://gvolpe.github.io")
+      )
+    )
   )
 )
 
