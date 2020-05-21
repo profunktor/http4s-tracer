@@ -14,43 +14,25 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.instances
+package dev.profunktor.tracer
 
-import cats.effect.Sync
-import cats.syntax.flatMap._
-import dev.profunktor.tracer.Trace
 import dev.profunktor.tracer.Trace._
-import dev.profunktor.tracer.TracerLog
-import org.slf4j.{Logger, LoggerFactory}
+import io.chrisdavenport.log4cats.Logger
 
 import scala.reflect.ClassTag
 
-object tracerlog {
+object log4cats {
 
-  implicit def defaultLog[F[_]](implicit F: Sync[F]): TracerLog[Trace[F, ?]] =
+  implicit def log4CatsInstance[F[_]](implicit L: Logger[F]): TracerLog[Trace[F, ?]] =
     new TracerLog[Trace[F, ?]] {
-      def logger[A](implicit ct: ClassTag[A]): F[Logger] =
-        F.delay(LoggerFactory.getLogger(ct.runtimeClass))
-
       override def info[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap { log =>
-          if (log.isInfoEnabled) F.delay(log.info(s"$id - $value"))
-          else F.unit
-        }
+        L.info(s"$id - $value")
       }
-
       override def error[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap { log =>
-          if (log.isErrorEnabled) F.delay(log.error(s"$id - $value"))
-          else F.unit
-        }
+        L.error(s"$id - $value")
       }
-
       override def warn[A: ClassTag](value: => String): Trace[F, Unit] = Trace { id =>
-        logger[A].flatMap { log =>
-          if (log.isWarnEnabled) F.delay(log.warn(s"$id - $value"))
-          else F.unit
-        }
+        L.warn(s"$id - $value")
       }
     }
 

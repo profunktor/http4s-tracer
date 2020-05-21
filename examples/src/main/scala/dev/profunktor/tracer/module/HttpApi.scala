@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer
+package dev.profunktor.tracer.module
 
 import cats.effect.Sync
-import dev.profunktor.tracer.Tracer.TraceId
-import java.{util => ju}
+import dev.profunktor.tracer.Trace.Trace
+import dev.profunktor.tracer.http.UserRoutes
+import dev.profunktor.tracer.module.tracer.TracedPrograms
+import dev.profunktor.tracer.{Tracer, TracerLog}
+import org.http4s.implicits._
+import org.http4s.{HttpApp, HttpRoutes}
 
-object GenUUID {
-  def make[F[_]: Sync]: F[TraceId] =
-    Sync[F].delay(TraceId(ju.UUID.randomUUID().toString()))
+final case class HttpApi[F[_]: Sync: Tracer: λ[T[_] => TracerLog[Trace[T, ?]]]](
+    programs: TracedPrograms[F]
+) {
+
+  private val httpRoutes: HttpRoutes[F] =
+    new UserRoutes[F](programs.users).routes
+
+  val httpApp: HttpApp[F] =
+    Tracer[F].loggingMiddleware(httpRoutes.orNotFound)
+
 }

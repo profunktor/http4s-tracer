@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer.module
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import cats.Parallel
+import cats.effect.Sync
+import dev.profunktor.tracer.algebra.UserAlgebra
+import dev.profunktor.tracer.program.UserProgram
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+private[module] trait Programs[F[_]] {
+  def users: UserAlgebra[F]
+}
+
+final case class LivePrograms[F[_]: Parallel: Sync](
+    repos: Repositories[F],
+    clients: HttpClients[F]
+) extends Programs[F] {
+  def users: UserAlgebra[F] = new UserProgram[F](repos.users, clients.userRegistry)
 }

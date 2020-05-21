@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package dev.profunktor.tracer.auth
+package dev.profunktor.tracer
 
-import dev.profunktor.tracer.Tracer.TraceId
-import dev.profunktor.tracer.auth.AuthTracedHttpRoute.AuthTracedRequest
-import org.http4s.AuthedRequest
+import cats.effect._
+import munit.FunSuite
+import scala.concurrent.ExecutionContext
 
-trait AuthTracerDsl {
-  object using {
-    def unapply[T, F[_]](tr: AuthTracedRequest[F, T]): Option[(AuthedRequest[F, T], TraceId)] =
-      Some(tr.request -> tr.traceId)
-  }
+abstract class IOSuite extends FunSuite {
+
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+
+  // format: off
+  override def munitValueTransforms =
+    super.munitValueTransforms :+ new ValueTransform("IO", {
+      case ioa: IO[_] => IO.suspend(ioa).unsafeToFuture
+    })
+  // format: on
+
 }

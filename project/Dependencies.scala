@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  object Versions {
+  object V {
     val catsEffect  = "2.1.3"
     val fs2         = "2.3.0"
     val http4s      = "0.21.4"
@@ -13,8 +13,7 @@ object Dependencies {
     val zioCats     = "2.0.0.0-RC14"
 
     // Test
-    val scalaTest  = "3.1.2"
-    val scalaCheck = "1.14.3"
+    val munit = "0.7.7"
 
     // Compiler
     val kindProjector    = "0.11.0"
@@ -25,41 +24,41 @@ object Dependencies {
   }
 
   object Libraries {
-    def circe(artifact: String): ModuleID                = "io.circe"          %% s"circe-$artifact"    % Versions.circe
-    def http4s(artifact: String): ModuleID               = "org.http4s"        %% s"http4s-$artifact"   % Versions.http4s
-    def log4cats(artifact: String): ModuleID             = "io.chrisdavenport" %% s"log4cats-$artifact" % Versions.log4Cats
+    def circe(artifact: String): ModuleID                = "io.circe"          %% s"circe-$artifact"    % V.circe
+    def http4s(artifact: String): ModuleID               = "org.http4s"        %% s"http4s-$artifact"   % V.http4s
+    def log4cats(artifact: String): ModuleID             = "io.chrisdavenport" %% s"log4cats-$artifact" % V.log4Cats
     def zio(artifact: String, version: String): ModuleID = "dev.zio"           %% artifact              % version
 
-    lazy val catsEffect = "org.typelevel" %% "cats-effect" % Versions.catsEffect
-    lazy val fs2Core    = "co.fs2"        %% "fs2-core"    % Versions.fs2
+    val catsEffect = "org.typelevel" %% "cats-effect" % V.catsEffect
+    val fs2Core    = "co.fs2"        %% "fs2-core"    % V.fs2
 
-    lazy val http4sServer = http4s("blaze-server")
-    lazy val http4sClient = http4s("blaze-client")
-    lazy val http4sDsl    = http4s("dsl")
-    lazy val http4sCirce  = http4s("circe")
+    val http4sServer = http4s("blaze-server")
+    val http4sClient = http4s("blaze-client")
+    val http4sDsl    = http4s("dsl")
+    val http4sCirce  = http4s("circe")
 
-    lazy val circeCore     = circe("core")
-    lazy val circeGeneric  = circe("generic")
-    lazy val circeGenericX = circe("generic-extras")
+    val circeCore     = circe("core")
+    val circeGeneric  = circe("generic")
+    val circeGenericX = circe("generic-extras")
 
-    lazy val zioCore = zio("zio", Versions.zio)
-    lazy val zioCats = zio("zio-interop-cats", Versions.zioCats)
+    val zioCore = zio("zio", V.zio)
+    val zioCats = zio("zio-interop-cats", V.zioCats)
 
-    lazy val gfcTimeuuid = "com.gilt" %% "gfc-timeuuid" % Versions.gfcTimeuuid
+    val gfcTimeuuid = "com.gilt" %% "gfc-timeuuid" % V.gfcTimeuuid
 
-    lazy val log4CatsCore  = log4cats("core")
-    lazy val log4CatsSlf4j = log4cats("slf4j")
+    val log4CatsCore  = log4cats("core")
+    val log4CatsSlf4j = log4cats("slf4j")
 
     // Test
-    lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % Versions.scalaCheck
-    lazy val scalaTest  = "org.scalatest"  %% "scalatest"  % Versions.scalaTest
+    val munitCore       = "org.scalameta" %% "munit"            % V.munit
+    val munitScalacheck = "org.scalameta" %% "munit-scalacheck" % V.munit
 
     // Compiler
-    lazy val kindProjector    = "org.typelevel" %% "kind-projector"     % Versions.kindProjector cross CrossVersion.full
-    lazy val betterMonadicFor = "com.olegpy"    %% "better-monadic-for" % Versions.betterMonadicFor
+    val kindProjector    = "org.typelevel" %% "kind-projector"     % V.kindProjector cross CrossVersion.full
+    val betterMonadicFor = "com.olegpy"    %% "better-monadic-for" % V.betterMonadicFor
 
     // Runtime
-    lazy val logback = "ch.qos.logback" % "logback-classic" % Versions.logback
+    val logback = "ch.qos.logback" % "logback-classic" % V.logback
   }
 
 }
