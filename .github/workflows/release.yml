@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    if: github.repository == "profunktor/http4s-tracer"
     name: Publish
     runs-on: ubuntu-18.04
     steps:
