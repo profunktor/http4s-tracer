@@ -1,5 +1,5 @@
-import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 import com.scalapenos.sbt.prompt._
+import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._
 import Dependencies._
 import microsites.ExtraMdFileConfig
 
