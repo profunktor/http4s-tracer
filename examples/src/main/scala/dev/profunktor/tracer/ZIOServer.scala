@@ -24,7 +24,7 @@ import zio.interop.catz.implicits._
 
 object ZIOServer extends CatsApp {
 
-  def run(args: List[String]): UIO[Int] =
-    new Main[Task].server.run.map(_.fold(_ => 1, _ => 0))
+  def run(args: List[String]): UIO[ExitCode] =
+    new Main[Task].server.run.map(_.fold(_ => ExitCode.failure, _ => ExitCode.success))
 
 }
