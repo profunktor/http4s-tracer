@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: olafurpg/setup-java@v6
+    - uses: olafurpg/setup-java@v10
 
     - name: Cache Coursier dependencies
       uses: actions/cache@v1.2.0
