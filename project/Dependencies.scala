@@ -16,7 +16,7 @@ object Dependencies {
     val munit = "0.7.19"
 
     // Compiler
-    val kindProjector    = "0.11.0"
+    val kindProjector    = "0.11.2"
     val betterMonadicFor = "0.3.1"
 
     // Runtime
