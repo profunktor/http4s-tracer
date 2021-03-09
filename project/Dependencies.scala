@@ -4,12 +4,12 @@ object Dependencies {
 
   object V {
     val catsEffect  = "2.3.3"
-    val fs2         = "2.5.2"
-    val http4s      = "0.21.19"
+    val fs2         = "2.5.3"
+    val http4s      = "0.21.20"
     val circe       = "0.13.0"
     val gfcTimeuuid = "0.0.8"
-    val log4Cats    = "1.2.0"
-    val zio         = "1.0.4-2"
+    val log4Cats    = "1.1.1"
+    val zio         = "1.0.5"
     val zioCats     = "2.3.1.0"
 
     // Test
