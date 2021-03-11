@@ -1,6 +1,6 @@
 resolvers += Classpaths.sbtPluginReleases
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
-addSbtPlugin("com.geirsson"              % "sbt-ci-release" % "1.5.5")
+addSbtPlugin("com.geirsson"              % "sbt-ci-release" % "1.5.6")
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"   % "0.1.16")
 addSbtPlugin("de.heikoseeberger"         % "sbt-header"     % "5.6.0")
 addSbtPlugin("com.lucidchart"            % "sbt-scalafmt"   % "1.16")
