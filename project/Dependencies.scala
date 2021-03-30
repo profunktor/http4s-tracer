@@ -3,17 +3,17 @@ import sbt._
 object Dependencies {
 
   object V {
-    val catsEffect  = "2.4.0"
-    val fs2         = "3.0.0"
+    val catsEffect  = "2.4.1"
+    val fs2         = "2.5.3"
     val http4s      = "0.21.21"
     val circe       = "0.13.0"
     val gfcTimeuuid = "0.0.8"
     val log4Cats    = "1.1.1"
     val zio         = "1.0.5"
-    val zioCats     = "2.3.1.0"
+    val zioCats     = "2.4.0.0"
 
     // Test
-    val munit = "0.7.22"
+    val munit = "0.7.23"
 
     // Compiler
     val kindProjector    = "0.11.0"
