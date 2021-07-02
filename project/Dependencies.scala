@@ -13,7 +13,7 @@ object Dependencies {
     val zioCats     = "2.4.1.0"
 
     // Test
-    val munit = "0.7.25"
+    val munit = "0.7.27"
 
     // Compiler
     val kindProjector    = "0.11.0"
