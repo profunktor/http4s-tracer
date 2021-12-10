@@ -78,7 +78,7 @@ lazy val noPublish = List(
   publish := {},
   publishLocal := {},
   publishArtifact := false,
-  skip in publish := true
+  (publish / skip) := true
 )
 
 lazy val `http4s-tracer` = project
@@ -138,8 +138,8 @@ lazy val microsite = project
     ),
     micrositeGitterChannel := true,
     micrositeGitterChannelUrl := "profunktor-dev/http4s-tracer",
-    fork in tut := true,
-    scalacOptions in Tut --= List(
+    (tut / fork) := true,
+    (Tut / scalacOptions) --= List(
       "-Xfatal-warnings",
       "-Ywarn-unused-import",
       "-Ywarn-numeric-widen",
