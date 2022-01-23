@@ -8,7 +8,7 @@ object Dependencies {
     val http4s      = "0.21.22"
     val circe       = "0.13.0"
     val gfcTimeuuid = "0.0.8"
-    val log4Cats    = "1.1.1"
+    val log4Cats    = "1.5.1"
     val zio         = "1.0.7"
     val zioCats     = "2.4.1.0"
 
