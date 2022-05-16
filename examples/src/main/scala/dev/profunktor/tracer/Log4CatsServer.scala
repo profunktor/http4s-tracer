@@ -19,7 +19,7 @@ package dev.profunktor.tracer
 import cats.effect._
 import dev.profunktor.tracer.instances.tracer._
 import dev.profunktor.tracer.log4cats._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object Log4CatsServer extends IOApp {
 

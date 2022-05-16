@@ -17,7 +17,7 @@
 package dev.profunktor.tracer
 
 import dev.profunktor.tracer.Trace._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 
 import scala.reflect.ClassTag
 
